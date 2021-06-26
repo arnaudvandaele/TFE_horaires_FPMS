@@ -10,6 +10,8 @@ context.params.LogVerbosity = 'Terse'
 # context.params.TemporalRelaxation = "Off"
 # context.params.DefaultInferenceLevel = 'Low'
 
+context.params.ConflictRefinerTimeLimit = 60
+
 context.verbose = 0
 
 context.model.add_source_location = False
