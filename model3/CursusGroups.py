@@ -110,7 +110,7 @@ class CursusGroups:
         cursusGroups = self.getGroupsWithCapacity(cursusList)
         cursusGroupsCheck = self.getGroups(cursusList)
         cursusGroupsCheck.append(numberDivisions)
-        if tuple(cursusGroupsCheck) in self.knownGroups and options["groupAuto"] is False:
+        if options["groupAuto"] is False and tuple(cursusGroupsCheck) in self.knownGroups:
             return self.knownGroups[tuple(cursusGroupsCheck)]
 
         if numberDivisions != 1:

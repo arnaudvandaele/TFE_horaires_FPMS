@@ -21,11 +21,11 @@ options = {
     "periods":4,
     "blocs":3,
     "up": True,
-    "allowed": ["BA2"],
+    "allowed": ["BA3_CHIM","BA3_ELEC","BA3_IG","BA3_MECA","BA3_MIN"],
     "quadri": "Q1",
     "delta": 0,
     "data": "listeCoursM1.xlsx",
-    "folder": "M3_V1_ba2_M",
+    "folder": "M3_V1_ba1_ba3_M",
     "groupAuto": False
 }
 
