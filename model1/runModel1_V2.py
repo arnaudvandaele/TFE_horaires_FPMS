@@ -18,11 +18,11 @@ options = {
     "weeks":12,
     "days":5,
     "periods":4,
-    "bloc": 1,
-    "allowed": None,
+    "bloc": 6,
+    "allowed": ["BA1"],
     "quadri": "Q1",
     "data": "listeCoursM1.xlsx",
-    "folder": "M1_base",
+    "folder": "M1_V2_ba1",
     "gap": 16
 }
 
@@ -44,10 +44,14 @@ TFEconstraints.startAndEndConstraint(model,exercisesDict)
 TFEconstraints.startAndEndConstraint(model,tpsDict)
 TFEconstraints.startAndEndConstraint(model,projectsDict)
 
-TFEconstraints.orderingSlotsConstraint(model,lecturesDict)
-TFEconstraints.orderingSlotsConstraint(model,exercisesDict)
-TFEconstraints.orderingSlotsConstraint(model,tpsDict)
-TFEconstraints.orderingSlotsConstraint(model,projectsDict)
+TFEconstraints.spreadConstraint(model,lecturesDict,options)
+TFEconstraints.spreadConstraint(model,exercisesDict,options)
+TFEconstraints.spreadConstraint(model,tpsDict,options)
+TFEconstraints.spreadConstraint(model,projectsDict,options)
+TFEconstraints.breakSymmetryBetweenSpreads(model,lecturesDict,options)
+TFEconstraints.breakSymmetryBetweenSpreads(model,exercisesDict,options)
+TFEconstraints.breakSymmetryBetweenSpreads(model,tpsDict,options)
+TFEconstraints.breakSymmetryBetweenSpreads(model,projectsDict,options)
 
 print(time.time()-begin)
 
@@ -60,9 +64,9 @@ if solution:
 
     # solution.write()
     pass
-    # TFEtimetable.generateAndSaveTimetables(solution,cursusDict,teachersDict,roomsDict,options,colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution,teachersDict,cursusDict,roomsDict,options,colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, options, colors.COLORS)
+    TFEtimetable.generateAndSaveTimetables(solution,cursusDict,teachersDict,roomsDict,options,colors.COLORS)
+    TFEtimetable.generateAndSaveTimetables(solution,teachersDict,cursusDict,roomsDict,options,colors.COLORS)
+    TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, options, colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_A", options,colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_B", options,colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, roomsDict, teachersDict, cursusDict, "Ho.12", options, colors.COLORS)

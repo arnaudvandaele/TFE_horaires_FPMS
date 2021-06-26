@@ -73,7 +73,7 @@ def instantiateVariables(options):
                     roomSlots[r].extend(lectureIntervals)
 
         if not pd.isna(row.Exercises):
-            listDivisions = cursusGroups.generateBalancedGroups(listCursus, row.Ex_groups)
+            listDivisions = cursusGroups.generateBalancedGroups(listCursus, row.Ex_groups,options)
             exerciseSlots[row.ID_AA] = {
                 "spread": spreadDict[row.Ex_spread],
                 "groups": [
@@ -133,7 +133,7 @@ def instantiateVariables(options):
                             roomSlots[r].append(exerciseInterval)
 
         if not pd.isna(row.TP):
-            listDivisions = cursusGroups.generateBalancedGroups(listCursus, row.TP_groups)
+            listDivisions = cursusGroups.generateBalancedGroups(listCursus, row.TP_groups,options)
             tpSlots[row.ID_AA] = {
                 "spread": spreadDict[row.TP_spread],
                 "groups": [

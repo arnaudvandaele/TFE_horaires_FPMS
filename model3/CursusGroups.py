@@ -57,21 +57,21 @@ class CursusGroups:
                 "BA3_MECA_B": 1
             },
             ("BA3_CHIM", "BA3_ELEC_A", "BA3_ELEC_B", "BA3_IG", "BA3_MECA_A","BA3_MECA_B","BA3_MIN", 4): {
-                "BA3_CHIM": 0,
+                "BA3_CHIM": 3,
                 "BA3_ELEC_A": 1,
                 "BA3_ELEC_B": 1,
                 "BA3_IG": 3,
                 "BA3_MECA_A": 2,
                 "BA3_MECA_B": 0,
-                "BA3_MIN": 3 #commun avec meca et pas IG
+                "BA3_MIN": 0
             },
             ("BA3_CHIM", "BA3_ELEC", "BA3_IG", "BA3_MECA_A", "BA3_MECA_B", "BA3_MIN", 4): {
-                "BA3_CHIM": 0,
+                "BA3_CHIM": 3,
                 "BA3_ELEC": 1,
                 "BA3_IG": 3,
                 "BA3_MECA_A": 2,
                 "BA3_MECA_B": 0,
-                "BA3_MIN": 3  # commun avec meca et pas IG
+                "BA3_MIN": 0
             },
             ("BA3_CHIM", "BA3_MIN", 2): {
                 "BA3_CHIM": 0,
@@ -106,13 +106,11 @@ class CursusGroups:
 
         return cursusGroups
 
-    # BA1 4 groupes = 1,0,2,3,1,0,3,2
-    # BA1 2 groupes = 0,0,1,1,0,1,0,1
-    def generateBalancedGroups(self,cursusList,numberDivisions):
+    def generateBalancedGroups(self,cursusList,numberDivisions,options):
         cursusGroups = self.getGroupsWithCapacity(cursusList)
         cursusGroupsCheck = self.getGroups(cursusList)
         cursusGroupsCheck.append(numberDivisions)
-        if tuple(cursusGroupsCheck) in self.knownGroups:
+        if tuple(cursusGroupsCheck) in self.knownGroups and options["groupAuto"] is False:
             return self.knownGroups[tuple(cursusGroupsCheck)]
 
         if numberDivisions != 1:
