@@ -11,11 +11,13 @@ import docplex.cp.model as cp
 
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
+print("Début de l'exécution : ...")
 print(current_time)
 
-# ----------------------------------------- DATA -----------------------------------
+print("Construction du modèle : ...")
 begin = time.time()
 model = cp.CpoModel()
+#TODO à terminer
 options = {
     "weeks":12,
     "days":5,
@@ -26,7 +28,8 @@ options = {
     "quadri": "Q1",
     "delta": 0,
     "data": "listeCoursM3_V2.xlsx",
-    "folder": "M3_V3"
+    "folder": "M3_V3",
+    "groupAuto": False
 }
 lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(options)
 print(time.time()-begin)

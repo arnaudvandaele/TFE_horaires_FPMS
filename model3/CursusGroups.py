@@ -57,21 +57,21 @@ class CursusGroups:
                 "BA3_MECA_B": 1
             },
             ("BA3_CHIM", "BA3_ELEC_A", "BA3_ELEC_B", "BA3_IG", "BA3_MECA_A","BA3_MECA_B","BA3_MIN", 4): {
-                "BA3_CHIM": 3,
+                "BA3_CHIM": 0,
                 "BA3_ELEC_A": 1,
                 "BA3_ELEC_B": 1,
                 "BA3_IG": 3,
                 "BA3_MECA_A": 2,
                 "BA3_MECA_B": 0,
-                "BA3_MIN": 0
+                "BA3_MIN": 3
             },
             ("BA3_CHIM", "BA3_ELEC", "BA3_IG", "BA3_MECA_A", "BA3_MECA_B", "BA3_MIN", 4): {
-                "BA3_CHIM": 3,
+                "BA3_CHIM": 0,
                 "BA3_ELEC": 1,
                 "BA3_IG": 3,
                 "BA3_MECA_A": 2,
                 "BA3_MECA_B": 0,
-                "BA3_MIN": 0
+                "BA3_MIN": 3
             },
             ("BA3_CHIM", "BA3_MIN", 2): {
                 "BA3_CHIM": 0,

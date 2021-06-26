@@ -21,7 +21,7 @@ options = {
     "periods":4,
     "blocs":3,
     "up": True,
-    "allowed": ["BA3_CHIM","BA3_ELEC","BA3_IG","BA3_MECA","BA3_MIN"],
+    "allowed": ["BA1","BA3_CHIM","BA3_ELEC","BA3_IG","BA3_MECA","BA3_MIN"],
     "quadri": "Q1",
     "delta": 0,
     "data": "listeCoursM1.xlsx",
