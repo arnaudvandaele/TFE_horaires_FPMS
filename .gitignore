@@ -1,0 +1,7 @@
+/cpo
+/venv
+/.idea
+/__pycache__
+
+**/*.xlsx
+**/*.jpg

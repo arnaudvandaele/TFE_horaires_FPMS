@@ -1,0 +1,618 @@
+- number of interval variables: 402
+ - number of expressions:        1472
+ - number of expression nodes:   5819
+ - operations:                   _trunc: 550, and: 53, endBeforeStart: 18, endOf: 316, equal: 275, floatDiv: 550, forbidExtent: 447, forbidStart: 106, greaterOrEqual: 237, lessOrEqual: 316, minimize: 1, minus: 80, noOverlap: 149, or: 25, scalProd: 1, startEval: 188, startOf: 833, sum: 1
+
+
+D:\Thomas\Documents\UNIF\MA2\TFE\Solver\venv\Scripts\python.exe D:/Thomas/Documents/UNIF/MA2/TFE/Solver/model3/runModel3.py
+13:47:39
+0.4420037269592285
+Model: runModel3
+ - source file: D:/Thomas/Documents/UNIF/MA2/TFE/Solver/model3/runModel3.py
+ - modeling time: 0.06 sec
+ - number of integer variables:  0
+ - number of interval variables: 402
+ - number of expressions:        1468
+ - number of expression nodes:   5808
+ - operations:                   _trunc: 554, and: 51, endBeforeStart: 18, endOf: 310, equal: 277, floatDiv: 554, forbidExtent: 447, forbidStart: 106, greaterOrEqual: 234, lessOrEqual: 310, minimize: 1, minus: 82, noOverlap: 149, or: 24, startEval: 188, startOf: 832, sum: 1
+StartSolve: Unknown, objective: None bounds: None, gaps: None, time: 0, memory: 1635048
+StartExtraction: Unknown, objective: None bounds: None, gaps: None, time: 0, memory: 1637976
+ ! --------------------------------------------------- CP Optimizer 20.1.0.0 --
+ ! Minimization problem - 551 variables, 1466 constraints
+ ! Presolve      : 418 extractables eliminated, 77 constraints generated
+ ! TimeLimit            = 2100
+ ! LogVerbosity         = Terse
+ ! Initial process time : 0.03s (0.03s extraction + 0.00s propagation)
+ !  . Log search space  : 2020.8 (before), 2020.8 (after)
+ !  . Memory usage      : 4.8 MB (before), 4.8 MB (after)
+ ! Using parallel search with 12 workers.
+ ! ----------------------------------------------------------------------------
+ !          Best Branches  Non-fixed    W       Branch decision
+EndExtraction: Unknown, objective: None bounds: None, gaps: None, time: 0.027, memory: 7151440
+StartSearch: Unknown, objective: None bounds: None, gaps: None, time: 0.034, memory: 7157944
+StartInitialPropagation: Unknown, objective: None bounds: None, gaps: None, time: 0.034, memory: 7159040
+EndInitialPropagation: Unknown, objective: None bounds: None, gaps: None, time: 0.041, memory: 7375808
+                        0        532                 -
+ + New bound is 0
+ObjBound: Unknown, objective: None bounds: (0,), gaps: None, time: 0.042, memory: 7376226
+ ! Using iterative diving.
+ ! Using temporal relaxation.
+ ! Using failure-directed search.
+ *           130    4344k  716.60s      1      (gap is 100.0%)
+Solution: Feasible, objective: (130,) bounds: (0,), gaps: (1,), time: 716.594, memory: 71365653
+ *           129    4354k  717.77s      1      (gap is 100.0%)
+Solution: Feasible, objective: (129,) bounds: (0,), gaps: (1,), time: 717.769, memory: 73573344
+ *           127    4354k  717.77s      1      (gap is 100.0%)
+Solution: Feasible, objective: (127,) bounds: (0,), gaps: (1,), time: 717.772, memory: 73590264
+ *           125    4356k  718.32s      1      (gap is 100.0%)
+Solution: Feasible, objective: (125,) bounds: (0,), gaps: (1,), time: 718.315, memory: 74231590
+ *           120    4356k  718.32s      1      (gap is 100.0%)
+Solution: Feasible, objective: (120,) bounds: (0,), gaps: (1,), time: 718.319, memory: 74231606
+ *           116    4360k  718.59s      1      (gap is 100.0%)
+Solution: Feasible, objective: (116,) bounds: (0,), gaps: (1,), time: 718.584, memory: 90852835
+ *           111    4362k  718.59s      1      (gap is 100.0%)
+Solution: Feasible, objective: (111,) bounds: (0,), gaps: (1,), time: 718.591, memory: 90851892
+ *           110    4363k  718.60s      1      (gap is 100.0%)
+Solution: Feasible, objective: (110,) bounds: (0,), gaps: (1,), time: 718.594, memory: 90851388
+ *           104    4363k  718.60s      1      (gap is 100.0%)
+Solution: Feasible, objective: (104,) bounds: (0,), gaps: (1,), time: 718.597, memory: 90851955
+ *           102    4364k  718.60s      1      (gap is 100.0%)
+Solution: Feasible, objective: (102,) bounds: (0,), gaps: (1,), time: 718.601, memory: 90850869
+ *            98    4364k  718.76s      1      (gap is 100.0%)
+Solution: Feasible, objective: (98,) bounds: (0,), gaps: (1,), time: 718.755, memory: 91614172
+ *            89    4365k  718.76s      1      (gap is 100.0%)
+Solution: Feasible, objective: (89,) bounds: (0,), gaps: (1,), time: 718.758, memory: 91614621
+ *            88    4365k  718.95s      1      (gap is 100.0%)
+Solution: Feasible, objective: (88,) bounds: (0,), gaps: (1,), time: 718.947, memory: 91766273
+ *            87    14606  719.76s     11      (gap is 100.0%)
+Solution: Feasible, objective: (87,) bounds: (0,), gaps: (1,), time: 719.759, memory: 94935570
+ *            86    14189  719.91s     12      (gap is 100.0%)
+Solution: Feasible, objective: (86,) bounds: (0,), gaps: (1,), time: 719.908, memory: 93139936
+ *            83    16192  720.07s     11      (gap is 100.0%)
+Solution: Feasible, objective: (83,) bounds: (0,), gaps: (1,), time: 720.068, memory: 93272759
+ *            81    18202  720.22s     11      (gap is 100.0%)
+Solution: Feasible, objective: (81,) bounds: (0,), gaps: (1,), time: 720.22, memory: 93385856
+ *            79    18789  720.38s     12      (gap is 100.0%)
+Solution: Feasible, objective: (79,) bounds: (0,), gaps: (1,), time: 720.374, memory: 93577238
+ *            76    4373k  720.54s      1      (gap is 100.0%)
+ ! Time = 720.55s, Average fail depth = 259, Memory usage = 93.6 MB
+ ! Current bound is 0 (gap is 100.0%)
+ !          Best Branches  Non-fixed    W       Branch decision
+Solution: Feasible, objective: (76,) bounds: (0,), gaps: (1,), time: 720.553, memory: 93597728
+ *            75    4373k  720.73s      1      (gap is 100.0%)
+Solution: Feasible, objective: (75,) bounds: (0,), gaps: (1,), time: 720.727, memory: 93651070
+ *            74    27975  721.12s     10      (gap is 100.0%)
+Solution: Feasible, objective: (74,) bounds: (0,), gaps: (1,), time: 721.117, memory: 94128948
+ *            72    32474  722.24s     11      (gap is 100.0%)
+Solution: Feasible, objective: (72,) bounds: (0,), gaps: (1,), time: 722.239, memory: 94279294
+ *            71    38736  722.61s     10      (gap is 100.0%)
+Solution: Feasible, objective: (71,) bounds: (0,), gaps: (1,), time: 722.604, memory: 94835019
+ *            69    34975  722.61s     11      (gap is 100.0%)
+Solution: Feasible, objective: (69,) bounds: (0,), gaps: (1,), time: 722.606, memory: 94835697
+ *            68    44546  723.07s     10      (gap is 100.0%)
+Solution: Feasible, objective: (68,) bounds: (0,), gaps: (1,), time: 723.072, memory: 94879768
+ *            67    4387k  723.08s      1      (gap is 100.0%)
+Solution: Feasible, objective: (67,) bounds: (0,), gaps: (1,), time: 723.074, memory: 94878358
+ *            64    4389k  723.24s      1      (gap is 100.0%)
+Solution: Feasible, objective: (64,) bounds: (0,), gaps: (1,), time: 723.235, memory: 94995406
+ *            61    39251  723.57s     11      (gap is 100.0%)
+Solution: Feasible, objective: (61,) bounds: (0,), gaps: (1,), time: 723.565, memory: 95122917
+ *            59    43637  723.74s     12      (gap is 100.0%)
+Solution: Feasible, objective: (59,) bounds: (0,), gaps: (1,), time: 723.733, memory: 95596229
+ *            58    4392k  723.74s      1      (gap is 100.0%)
+Solution: Feasible, objective: (58,) bounds: (0,), gaps: (1,), time: 723.736, memory: 95716104
+ *            57    4392k  723.93s      1      (gap is 100.0%)
+Solution: Feasible, objective: (57,) bounds: (0,), gaps: (1,), time: 723.926, memory: 95828559
+ *            56    4395k  724.27s      1      (gap is 100.0%)
+Solution: Feasible, objective: (56,) bounds: (0,), gaps: (1,), time: 724.266, memory: 96153730
+ *            54    4395k  724.27s      1      (gap is 100.0%)
+Solution: Feasible, objective: (54,) bounds: (0,), gaps: (1,), time: 724.268, memory: 96152793
+ *            53    4397k  724.44s      1      (gap is 100.0%)
+Solution: Feasible, objective: (53,) bounds: (0,), gaps: (1,), time: 724.438, memory: 96396565
+ *            49    52330  724.61s     10      (gap is 100.0%)
+Solution: Feasible, objective: (49,) bounds: (0,), gaps: (1,), time: 724.603, memory: 96514403
+ *            47    53143  724.76s     10      (gap is 100.0%)
+Solution: Feasible, objective: (47,) bounds: (0,), gaps: (1,), time: 724.762, memory: 96602019
+ *            46    54671  725.11s     10      (gap is 100.0%)
+Solution: Feasible, objective: (46,) bounds: (0,), gaps: (1,), time: 725.108, memory: 96842389
+ *            45    54767  725.11s     10      (gap is 100.0%)
+Solution: Feasible, objective: (45,) bounds: (0,), gaps: (1,), time: 725.112, memory: 96841653
+ *            44    62779  726.75s     12      (gap is 100.0%)
+ ! Time = 726.75s, Average fail depth = 242, Memory usage = 97.0 MB
+ ! Current bound is 0 (gap is 100.0%)
+ !          Best Branches  Non-fixed    W       Branch decision
+Solution: Feasible, objective: (44,) bounds: (0,), gaps: (1,), time: 726.751, memory: 97026791
+ *            43    68844  727.59s     12      (gap is 100.0%)
+Solution: Feasible, objective: (43,) bounds: (0,), gaps: (1,), time: 727.591, memory: 97151766
+ *            42    71236  728.10s     12      (gap is 100.0%)
+Solution: Feasible, objective: (42,) bounds: (0,), gaps: (1,), time: 728.097, memory: 97274722
+ *            41    74459  728.61s     12      (gap is 100.0%)
+Solution: Feasible, objective: (41,) bounds: (0,), gaps: (1,), time: 728.611, memory: 97527192
+ *            38    74952  728.62s     12      (gap is 100.0%)
+Solution: Feasible, objective: (38,) bounds: (0,), gaps: (1,), time: 728.614, memory: 97528661
+ *            37    75538  728.78s     12      (gap is 100.0%)
+Solution: Feasible, objective: (37,) bounds: (0,), gaps: (1,), time: 728.775, memory: 97836071
+ *            36    77377  729.12s     12      (gap is 100.0%)
+Solution: Feasible, objective: (36,) bounds: (0,), gaps: (1,), time: 729.117, memory: 97954784
+ *            35    78663  729.28s     11      (gap is 100.0%)
+Solution: Feasible, objective: (35,) bounds: (0,), gaps: (1,), time: 729.276, memory: 97848602
+ *            34    97817  731.50s     11      (gap is 100.0%)
+Solution: Feasible, objective: (34,) bounds: (0,), gaps: (1,), time: 731.499, memory: 98024883
+ *            33     108k  733.25s     10      (gap is 100.0%)
+Solution: Feasible, objective: (33,) bounds: (0,), gaps: (1,), time: 733.244, memory: 98140007
+ *            32     181k  744.52s     12      (gap is 100.0%)
+Solution: Feasible, objective: (32,) bounds: (0,), gaps: (1,), time: 744.522, memory: 100023665
+ *            31     186k  745.67s     12      (gap is 100.0%)
+Solution: Feasible, objective: (31,) bounds: (0,), gaps: (1,), time: 745.668, memory: 100144738
+ *            27     200k  748.17s     10      (gap is 100.0%)
+Solution: Feasible, objective: (27,) bounds: (0,), gaps: (1,), time: 748.171, memory: 100262323
+ *            26    4576k  751.75s      1      (gap is 100.0%)
+Solution: Feasible, objective: (26,) bounds: (0,), gaps: (1,), time: 751.746, memory: 100387668
+ *            25    4595k  755.34s      1      (gap is 100.0%)
+Solution: Feasible, objective: (25,) bounds: (0,), gaps: (1,), time: 755.339, memory: 100513850
+ *            24     239k  755.52s     10      (gap is 100.0%)
+Solution: Feasible, objective: (24,) bounds: (0,), gaps: (1,), time: 755.52, memory: 100625723
+ *            23    4660k  762.29s      1      (gap is 100.0%)
+Solution: Feasible, objective: (23,) bounds: (0,), gaps: (1,), time: 762.291, memory: 102486277
+ *            22    4716k  771.84s      1      (gap is 100.0%)
+Solution: Feasible, objective: (22,) bounds: (0,), gaps: (1,), time: 771.842, memory: 102640162
+ *            21    4746k  777.83s      1      (gap is 100.0%)
+Solution: Feasible, objective: (21,) bounds: (0,), gaps: (1,), time: 777.826, memory: 102814418
+ *            19   18124k  794.72s      2      (gap is 100.0%)
+Solution: Feasible, objective: (19,) bounds: (0,), gaps: (1,), time: 794.714, memory: 103146557
+ *            18     499k  798.82s     10      (gap is 100.0%)
+ ! Time = 798.82s, Average fail depth = 232, Memory usage = 103.3 MB
+ ! Current bound is 0 (gap is 100.0%)
+ !          Best Branches  Non-fixed    W       Branch decision
+Solution: Feasible, objective: (18,) bounds: (0,), gaps: (1,), time: 798.821, memory: 103262153
+ *            17   18148k  799.78s      2      (gap is 100.0%)
+Solution: Feasible, objective: (17,) bounds: (0,), gaps: (1,), time: 799.777, memory: 103385697
+ *            16   18154k  801.20s      2      (gap is 100.0%)
+Solution: Feasible, objective: (16,) bounds: (0,), gaps: (1,), time: 801.202, memory: 103504543
+ *            15     529k  805.52s     10      (gap is 100.0%)
+Solution: Feasible, objective: (15,) bounds: (0,), gaps: (1,), time: 805.515, memory: 103603150
+ *            14     615k  816.66s     12      (gap is 100.0%)
+Solution: Feasible, objective: (14,) bounds: (0,), gaps: (1,), time: 816.657, memory: 106989085
+ *            13   18730k  826.51s      4      (gap is 100.0%)
+Solution: Feasible, objective: (13,) bounds: (0,), gaps: (1,), time: 826.504, memory: 107338757
+ *            12   18851k  866.01s      4      (gap is 100.0%)
+Solution: Feasible, objective: (12,) bounds: (0,), gaps: (1,), time: 866.006, memory: 110796065
+ *            11   14836k  868.88s      3      (gap is 100.0%)
+Solution: Feasible, objective: (11,) bounds: (0,), gaps: (1,), time: 868.882, memory: 111101337
+ *             9   18953k  892.91s      4      (gap is 100.0%)
+Solution: Feasible, objective: (9,) bounds: (0,), gaps: (1,), time: 892.905, memory: 111301580
+ *             8    1036k  927.78s     10      (gap is 100.0%)
+Solution: Feasible, objective: (8,) bounds: (0,), gaps: (1,), time: 927.781, memory: 111504814
+ *             7   18702k  930.27s      2      (gap is 100.0%)
+Solution: Feasible, objective: (7,) bounds: (0,), gaps: (1,), time: 930.271, memory: 111633280
+ *             6   19235k  994.85s      7      (gap is 100.0%)
+Solution: Feasible, objective: (6,) bounds: (0,), gaps: (1,), time: 994.845, memory: 113640023
+ *             5    1533k  1011.81s    11      (gap is 100.0%)
+Solution: Feasible, objective: (5,) bounds: (0,), gaps: (1,), time: 1011.81, memory: 113790094
+ ! ----------------------------------------------------------------------------
+ ! Search terminated by limit, 71 solutions found.
+ ! Best objective         : 5 (gap is 100.0%)
+ ! Best bound             : 0
+ ! ----------------------------------------------------------------------------
+ ! Number of branches     : 522977189
+ ! Number of fails        : 103046003
+ ! Total memory usage     : 108.2 MB (108.0 MB CP Optimizer + 0.2 MB Concert)
+ ! Time spent in solve    : 2100.22s (2100.20s engine + 0.03s extraction)
+ ! Search speed (br. / s) : 249014.1
+ ! ----------------------------------------------------------------------------
+EndSearch: Feasible, objective: None bounds: None, gaps: None, time: 2100.22, memory: 108010722
+EndSolve: Feasible, objective: None bounds: None, gaps: None, time: 2100.22, memory: 108010466
+2100.360184431076
+-------------------------------------------------------------------------------
+Model constraints: 1466, variables: integer: 0, interval: 402, sequence: 149
+Solve status: Feasible
+Search status: SearchStopped, stop cause: SearchStoppedByLimit
+Solve time: 2100.26 sec
+-------------------------------------------------------------------------------
+Objective values: (5,), bounds: (0,), gaps: (1,)
+Variables:
+   I-AUTO-023_lec_0 = (5, 6, 1)
+   I-AUTO-023_lec_1 = (25, 26, 1)
+   I-AUTO-023_lec_2 = (8, 9, 1)
+   I-AUTO-023_lec_3 = (26, 27, 1)
+   I-AUTO-023_lec_4 = (12, 13, 1)
+   I-AUTO-023_lec_5 = (32, 33, 1)
+   I-AUTO-023_lec_6 = (13, 14, 1)
+   I-AUTO-023_lec_7 = (33, 34, 1)
+   I-AUTO-123_tp_0_g_0 = (54, 56, 2)
+   I-AUTO-123_tp_0_g_1 = (50, 52, 2)
+   I-AUTO-123_tp_1_g_0 = (66, 68, 2)
+   I-AUTO-123_tp_1_g_1 = (62, 64, 2)
+   I-FLMA-001_ex_0_g_0 = (19, 20, 1)
+   I-FLMA-001_ex_1_g_0 = (23, 24, 1)
+   I-FLMA-001_lec_0 = (17, 18, 1)
+   I-FLMA-001_lec_1 = (29, 30, 1)
+   I-FLMA-001_lec_2 = (56, 57, 1)
+   I-FLMA-001_lec_3 = (68, 69, 1)
+   I-GCMS-005_lec_0 = (8, 9, 1)
+   I-GCMS-005_lec_1 = (20, 21, 1)
+   I-GCMS-005_lec_2 = (48, 49, 1)
+   I-GCMS-005_lec_3 = (61, 62, 1)
+   I-GCMS-005_tp_0_g_0 = (14, 16, 2)
+   I-GCMS-005_tp_1_g_0 = (26, 28, 2)
+   I-GCMS-021_ex_0_g_0 = (11, 12, 1)
+   I-GCMS-021_ex_1_g_0 = (34, 35, 1)
+   I-GCMS-021_ex_2_g_0 = (59, 60, 1)
+   I-GCMS-021_lec_0 = (37, 38, 1)
+   I-GCMS-021_lec_1 = (52, 53, 1)
+   I-GCMS-021_lec_2 = (69, 70, 1)
+   I-GCMS-022_ex_0_g_0 = (46, 47, 1)
+   I-GCMS-022_ex_1_g_0 = (73, 74, 1)
+   I-GCMS-022_lec_0 = (40, 41, 1)
+   I-GCMS-022_lec_1 = (61, 62, 1)
+   I-GCMS-022_lec_2 = (49, 50, 1)
+   I-GEOL-001_ex_0_g_0 = (0, 1, 1)
+   I-GEOL-001_ex_1_g_0 = (21, 22, 1)
+   I-GEOL-001_lec_0 = (1, 2, 1)
+   I-GEOL-001_lec_1 = (24, 25, 1)
+   I-GEOL-001_lec_2 = (40, 41, 1)
+   I-GEOL-001_lec_3 = (60, 61, 1)
+   I-GEOL-001_lec_4 = (5, 6, 1)
+   I-GEOL-001_tp_0_g_0 = (42, 44, 2)
+   I-GEOL-001_tp_1_g_0 = (62, 64, 2)
+   I-GEOL-002_lec_0 = (9, 10, 1)
+   I-GEOL-002_lec_1 = (33, 34, 1)
+   I-GMEC-001_lec_0 = (1, 2, 1)
+   I-GMEC-001_lec_1 = (24, 25, 1)
+   I-GMEC-001_lec_2 = (16, 17, 1)
+   I-GMEC-021_ex_0_g_0 = (2, 3, 1)
+   I-GMEC-021_ex_1_g_0 = (36, 37, 1)
+   I-GMEC-021_lec_0 = (8, 9, 1)
+   I-GMEC-021_lec_1 = (37, 38, 1)
+   I-GMEC-021_lec_2 = (52, 53, 1)
+   I-GMEC-021_lec_3 = (65, 66, 1)
+   I-GMEC-021_tp_0_g_0 = (56, 58, 2)
+   I-GMEC-021_tp_0_g_1 = (58, 60, 2)
+   I-GMEC-021_tp_0_g_2 = (54, 56, 2)
+   I-GMEC-021_tp_0_g_3 = (48, 50, 2)
+   I-GMEC-021_tp_1_g_0 = (68, 70, 2)
+   I-GMEC-021_tp_1_g_1 = (76, 78, 2)
+   I-GMEC-021_tp_1_g_2 = (72, 74, 2)
+   I-GMEC-021_tp_1_g_3 = (66, 68, 2)
+   I-GMEC-023_ex_0_g_0 = (10, 11, 1)
+   I-GMEC-023_lec_0 = (0, 1, 1)
+   I-GMEC-023_lec_1 = (30, 31, 1)
+   I-GMEC-023_lec_2 = (53, 54, 1)
+   I-GMEC-023_lec_3 = (72, 73, 1)
+   I-GMEC-023_lec_4 = (57, 58, 1)
+   I-GMEC-023_tp_0_g_0 = (6, 8, 2)
+   I-GMEC-023_tp_1_g_0 = (38, 40, 2)
+   I-GMEC-023_tp_2_g_0 = (42, 44, 2)
+   I-GMEC-023_tp_3_g_0 = (74, 76, 2)
+   I-GMEC-101_lec_0 = (41, 42, 1)
+   I-GMEC-101_lec_1 = (60, 61, 1)
+   I-GMEC-101_lec_2 = (48, 49, 1)
+   I-GMIN-001_ex_0_g_0 = (2, 3, 1)
+   I-GMIN-001_ex_1_g_0 = (30, 31, 1)
+   I-GMIN-001_lec_0 = (12, 13, 1)
+   I-GMIN-001_lec_1 = (32, 33, 1)
+   I-GMIN-001_lec_2 = (41, 42, 1)
+   I-GMIN-001_lec_3 = (65, 66, 1)
+   I-GMIN-011_lec_0 = (4, 5, 1)
+   I-GMIN-011_lec_1 = (25, 26, 1)
+   I-GMIN-011_lec_2 = (44, 45, 1)
+   I-GMIN-011_lec_3 = (64, 65, 1)
+   I-GMIN-011_lec_4 = (13, 14, 1)
+   I-GMIN-011_lec_5 = (28, 29, 1)
+   I-GPRO-001_lec_0 = (1, 2, 1)
+   I-GPRO-001_lec_1 = (37, 38, 1)
+   I-GPRO-001_lec_2 = (40, 41, 1)
+   I-GPRO-001_lec_3 = (73, 74, 1)
+   I-GPRO-028_lec_0 = (36, 37, 1)
+   I-GPRO-028_lec_1 = (49, 50, 1)
+   I-GPRO-028_lec_2 = (72, 73, 1)
+   I-GPRO-028_tp_0_g_0 = (12, 14, 2)
+   I-GPRO-028_tp_0_g_1 = (6, 8, 2)
+   I-GPRO-028_tp_1_g_0 = (26, 28, 2)
+   I-GPRO-028_tp_1_g_1 = (38, 40, 2)
+   I-GPRO-029_lec_0 = (25, 26, 1)
+   I-GPRO-029_lec_1 = (44, 45, 1)
+   I-GPRO-029_lec_2 = (64, 65, 1)
+   I-GPRO-029_tp_0_g_0 = (10, 12, 2)
+   I-GRCM-031A_pr_0 = (30, 32, 2)
+   I-GRCM-031A_pr_1 = (42, 44, 2)
+   I-GRCM-031A_pr_2 = (66, 68, 2)
+   I-GRME-035_tp_0_g_0 = (54, 56, 2)
+   I-GRME-035_tp_1_g_0 = (66, 68, 2)
+   I-ILIA-002_lec_0 = (28, 29, 1)
+   I-ILIA-002_lec_1 = (44, 45, 1)
+   I-ILIA-002_lec_2 = (64, 65, 1)
+   I-ILIA-002_tp_0_g_0 = (40, 42, 2)
+   I-ILIA-002_tp_0_g_1 = (42, 44, 2)
+   I-ILIA-002_tp_0_g_2 = (46, 48, 2)
+   I-ILIA-002_tp_0_g_3 = (50, 52, 2)
+   I-ILIA-002_tp_1_g_0 = (78, 80, 2)
+   I-ILIA-002_tp_1_g_1 = (70, 72, 2)
+   I-ILIA-002_tp_1_g_2 = (62, 64, 2)
+   I-ILIA-002_tp_1_g_3 = (74, 76, 2)
+   I-ILIA-004_lec_0 = (5, 6, 1)
+   I-ILIA-004_tp_0_g_0 = (34, 36, 2)
+   I-ILIA-004_tp_1_g_0 = (58, 60, 2)
+   I-ILIA-004_tp_2_g_0 = (72, 74, 2)
+   I-ILIA-024_ex_0_g_0 = (2, 3, 1)
+   I-ILIA-024_lec_0 = (9, 10, 1)
+   I-ILIA-024_lec_1 = (32, 33, 1)
+   I-ILIA-024_pr_0 = (6, 8, 2)
+   I-ILIA-024_pr_1 = (26, 28, 2)
+   I-ILIA-024_pr_2 = (52, 54, 2)
+   I-ILIA-024_pr_3 = (62, 64, 2)
+   I-ILIA-024_tp_0_g_0 = (12, 14, 2)
+   I-ISIA-001_ex_0_g_0 = (2, 3, 1)
+   I-ISIA-001_ex_1_g_0 = (27, 28, 1)
+   I-ISIA-001_lec_0 = (24, 25, 1)
+   I-ISIA-001_lec_1 = (49, 50, 1)
+   I-ISIA-001_lec_2 = (61, 62, 1)
+   I-ISIA-001_tp_0_g_0 = (6, 8, 2)
+   I-ISIA-001_tp_1_g_0 = (30, 32, 2)
+   I-ISIA-001_tp_2_g_0 = (46, 48, 2)
+   I-ISIA-020_lec_0 = (1, 2, 1)
+   I-ISIA-020_lec_1 = (21, 22, 1)
+   I-ISIA-020_lec_2 = (37, 38, 1)
+   I-ISIA-020_tp_0_g_0 = (10, 12, 2)
+   I-ISIA-021_lec_0 = (41, 42, 1)
+   I-ISIA-021_lec_1 = (65, 66, 1)
+   I-ISIA-021_lec_2 = (52, 53, 1)
+   I-ISIA-021_tp_0_g_0 = (42, 44, 2)
+   I-ISIA-021_tp_1_g_0 = (62, 64, 2)
+   I-ISIA-030_ex_0_g_0 = (30, 31, 1)
+   I-ISIA-030_ex_1_g_0 = (43, 44, 1)
+   I-ISIA-030_lec_0 = (16, 17, 1)
+   I-ISIA-030_lec_1 = (28, 29, 1)
+   I-ISIA-030_lec_2 = (48, 49, 1)
+   I-ISIA-030_tp_0_g_0 = (50, 52, 2)
+   I-ISIA-030_tp_1_g_0 = (78, 80, 2)
+   I-MANA-002_lec_0 = (4, 5, 1)
+   I-MANA-002_lec_1 = (37, 38, 1)
+   I-MANA-002_lec_2 = (48, 49, 1)
+   I-MANA-002_lec_3 = (76, 77, 1)
+   I-MARO-004_ex_0_g_0 = (26, 27, 1)
+   I-MARO-004_ex_1_g_0 = (59, 60, 1)
+   I-MARO-004_lec_0 = (16, 17, 1)
+   I-MARO-004_lec_1 = (25, 26, 1)
+   I-MARO-004_lec_2 = (56, 57, 1)
+   I-MARO-004_lec_3 = (77, 78, 1)
+   I-MARO-004_lec_4 = (17, 18, 1)
+   I-MARO-004_tp_0_g_0 = (46, 48, 2)
+   I-MARO-004_tp_0_g_1 = (40, 42, 2)
+   I-MARO-014_lec_0 = (8, 9, 1)
+   I-MARO-014_lec_1 = (25, 26, 1)
+   I-MARO-014_lec_2 = (49, 50, 1)
+   I-MARO-014_tp_0_g_0 = (14, 16, 2)
+   I-MARO-014_tp_1_g_0 = (38, 40, 2)
+   I-MARO-020_ex_0_g_0 = (14, 15, 1)
+   I-MARO-020_ex_1_g_0 = (35, 36, 1)
+   I-MARO-020_ex_2_g_0 = (44, 45, 1)
+   I-MARO-020_ex_3_g_0 = (75, 76, 1)
+   I-MARO-020_lec_0 = (9, 10, 1)
+   I-MARO-020_lec_1 = (25, 26, 1)
+   I-MARO-020_lec_2 = (53, 54, 1)
+   I-MARO-020_lec_3 = (61, 62, 1)
+   I-MARO-021_ex_0_g_0 = (3, 4, 1)
+   I-MARO-021_ex_0_g_1 = (0, 1, 1)
+   I-MARO-021_ex_1_g_0 = (23, 24, 1)
+   I-MARO-021_ex_1_g_1 = (34, 35, 1)
+   I-MARO-021_ex_2_g_0 = (43, 44, 1)
+   I-MARO-021_ex_2_g_1 = (42, 43, 1)
+   I-MARO-021_ex_3_g_0 = (74, 75, 1)
+   I-MARO-021_ex_3_g_1 = (78, 79, 1)
+   I-MARO-021_lec_0 = (1, 2, 1)
+   I-MARO-021_lec_1 = (20, 21, 1)
+   I-MARO-021_lec_2 = (45, 46, 1)
+   I-MARO-021_lec_3 = (64, 65, 1)
+   I-MARO-024_ex_0_g_0 = (15, 16, 1)
+   I-MARO-024_ex_1_g_0 = (30, 31, 1)
+   I-MARO-024_lec_0 = (5, 6, 1)
+   I-MARO-024_lec_1 = (24, 25, 1)
+   I-MARO-024_lec_2 = (57, 58, 1)
+   I-MARO-024_lec_3 = (65, 66, 1)
+   I-MARO-025_lec_0 = (53, 54, 1)
+   I-MARO-025_lec_1 = (68, 69, 1)
+   I-MARO-035_ex_0_g_0 = (1, 2, 1)
+   I-MARO-035_ex_1_g_0 = (21, 22, 1)
+   I-MARO-035_ex_2_g_0 = (42, 43, 1)
+   I-MARO-035_lec_0 = (20, 21, 1)
+   I-MARO-035_lec_1 = (40, 41, 1)
+   I-MARO-035_lec_2 = (64, 65, 1)
+   I-MARO-036_ex_0_g_0 = (24, 25, 1)
+   I-MARO-036_ex_1_g_0 = (46, 47, 1)
+   I-MARO-036_lec_0 = (4, 5, 1)
+   I-MARO-036_lec_1 = (36, 37, 1)
+   I-MARO-036_lec_2 = (57, 58, 1)
+   I-MARO-036_lec_3 = (60, 61, 1)
+   I-META-001_lec_0 = (0, 1, 1)
+   I-META-001_lec_1 = (21, 22, 1)
+   I-META-001_lec_2 = (9, 10, 1)
+   I-META-001_lec_3 = (28, 29, 1)
+   I-META-001_tp_0_g_0 = (50, 52, 2)
+   I-META-001_tp_1_g_0 = (74, 76, 2)
+   I-META-101_lec_0 = (9, 10, 1)
+   I-META-101_lec_1 = (20, 21, 1)
+   I-META-101_lec_2 = (44, 45, 1)
+   I-MRDV-020_ex_0_g_0 = (15, 16, 1)
+   I-MRDV-020_ex_1_g_0 = (38, 39, 1)
+   I-MRDV-020_lec_0 = (5, 6, 1)
+   I-MRDV-020_lec_1 = (33, 34, 1)
+   I-MRDV-022_ex_0_g_0 = (0, 1, 1)
+   I-MRDV-022_ex_1_g_0 = (31, 32, 1)
+   I-MRDV-022_ex_2_g_0 = (54, 55, 1)
+   I-MRDV-022_ex_3_g_0 = (66, 67, 1)
+   I-MRDV-022_lec_0 = (12, 13, 1)
+   I-MRDV-022_lec_1 = (20, 21, 1)
+   I-MRDV-022_lec_2 = (45, 46, 1)
+   I-MRDV-022_lec_3 = (72, 73, 1)
+   I-MRDV-022_lec_4 = (21, 22, 1)
+   I-MRDV-022_tp_0_g_0 = (50, 52, 2)
+   I-MRDV-022_tp_0_g_1 = (40, 42, 2)
+   I-MRDV-022_tp_0_g_2 = (42, 44, 2)
+   I-MRDV-022_tp_0_g_3 = (46, 48, 2)
+   I-MRDV-023_lec_0 = (61, 62, 1)
+   I-MRDV-023_tp_0_g_0 = (70, 72, 2)
+   I-MRDV-023_tp_0_g_1 = (78, 80, 2)
+   I-MRDV-023_tp_0_g_2 = (74, 76, 2)
+   I-MRDV-023_tp_0_g_3 = (62, 64, 2)
+   I-PHYS-020_ex_0_g_0 = (0, 1, 1)
+   I-PHYS-020_ex_0_g_1 = (3, 4, 1)
+   I-PHYS-020_ex_1_g_0 = (22, 23, 1)
+   I-PHYS-020_ex_1_g_1 = (28, 29, 1)
+   I-PHYS-020_lec_0 = (4, 5, 1)
+   I-PHYS-020_lec_1 = (24, 25, 1)
+   I-PHYS-020_lec_2 = (40, 41, 1)
+   I-PHYS-020_lec_3 = (60, 61, 1)
+   I-PHYS-020_tp_0_g_0 = (48, 50, 2)
+   I-PHYS-020_tp_0_g_1 = (54, 56, 2)
+   I-PHYS-020_tp_0_g_2 = (56, 58, 2)
+   I-PHYS-020_tp_0_g_3 = (58, 60, 2)
+   I-PHYS-020_tp_1_g_0 = (66, 68, 2)
+   I-PHYS-020_tp_1_g_1 = (72, 74, 2)
+   I-PHYS-020_tp_1_g_2 = (76, 78, 2)
+   I-PHYS-020_tp_1_g_3 = (68, 70, 2)
+   I-PHYS-022_ex_0_g_0 = (23, 24, 1)
+   I-PHYS-022_lec_0 = (33, 34, 1)
+   I-PHYS-022_lec_1 = (49, 50, 1)
+   I-PHYS-022_lec_2 = (69, 70, 1)
+   I-POLY-001_lec_0 = (16, 17, 1)
+   I-POLY-001_lec_1 = (29, 30, 1)
+   I-POLY-010_lec_0 = (17, 18, 1)
+   I-POLY-010_lec_1 = (32, 33, 1)
+   I-POLY-011_pr_0 = (6, 8, 2)
+   I-POLY-011_pr_1 = (26, 28, 2)
+   I-POLY-011_pr_2 = (46, 48, 2)
+   I-POLY-011_pr_3 = (62, 64, 2)
+   I-SDMA-014_lec_0 = (5, 6, 1)
+   I-SDMA-014_lec_1 = (24, 25, 1)
+   I-SDMA-014_lec_2 = (41, 42, 1)
+   I-SDMA-014_lec_3 = (60, 61, 1)
+   I-SDMA-014_lec_4 = (32, 33, 1)
+   I-SDMA-014_lec_5 = (52, 53, 1)
+   I-SDMA-014_lec_6 = (69, 70, 1)
+   I-SDMA-014_tp_0_g_0 = (46, 48, 2)
+   I-SDMA-014_tp_1_g_0 = (62, 64, 2)
+   I-SDMA-020_ex_0_g_0 = (18, 19, 1)
+   I-SDMA-020_ex_0_g_1 = (12, 13, 1)
+   I-SDMA-020_ex_1_g_0 = (34, 35, 1)
+   I-SDMA-020_ex_1_g_1 = (22, 23, 1)
+   I-SDMA-020_lec_0 = (13, 14, 1)
+   I-SDMA-020_lec_1 = (21, 22, 1)
+   I-SDMA-020_lec_2 = (41, 42, 1)
+   I-SDMA-020_tp_0_g_0 = (58, 60, 2)
+   I-SDMA-020_tp_0_g_1 = (56, 58, 2)
+   I-SDMA-020_tp_0_g_2 = (48, 50, 2)
+   I-SDMA-020_tp_0_g_3 = (54, 56, 2)
+   I-SDMA-020_tp_1_g_0 = (72, 74, 2)
+   I-SDMA-020_tp_1_g_1 = (78, 80, 2)
+   I-SDMA-020_tp_1_g_2 = (68, 70, 2)
+   I-SDMA-020_tp_1_g_3 = (76, 78, 2)
+   I-SDMA-021_ex_0_g_0 = (34, 35, 1)
+   I-SDMA-021_lec_0 = (8, 9, 1)
+   I-SDMA-021_lec_1 = (32, 33, 1)
+   I-SDMA-021_lec_2 = (9, 10, 1)
+   I-SDMA-021_tp_0_g_0 = (18, 20, 2)
+   I-SDMA-021_tp_0_g_1 = (10, 12, 2)
+   I-SDMA-021_tp_0_g_2 = (6, 8, 2)
+   I-SDMA-021_tp_0_g_3 = (2, 4, 2)
+   I-SDMA-022_lec_0 = (29, 30, 1)
+   I-SDMA-022_lec_1 = (58, 59, 1)
+   I-SDMA-022_lec_2 = (73, 74, 1)
+   I-SDMA-022_tp_0_g_0 = (74, 76, 2)
+   I-SDMA-022_tp_0_g_1 = (62, 64, 2)
+   I-SDMA-022_tp_0_g_2 = (78, 80, 2)
+   I-SDMA-022_tp_0_g_3 = (70, 72, 2)
+   I-SEMI-001_ex_0_g_0 = (3, 4, 1)
+   I-SEMI-001_lec_0 = (18, 19, 1)
+   I-SEMI-001_lec_1 = (22, 23, 1)
+   I-SEMI-001_lec_2 = (45, 46, 1)
+   I-SEMI-001_lec_3 = (76, 77, 1)
+   I-SEMI-001_tp_0_g_0 = (70, 72, 2)
+   I-SEMI-001_tp_0_g_1 = (72, 74, 2)
+   I-SEMI-001_tp_0_g_2 = (64, 66, 2)
+   I-SEMI-001_tp_0_g_3 = (74, 76, 2)
+   I-TELE-003_lec_0 = (4, 5, 1)
+   I-TELE-003_lec_1 = (20, 21, 1)
+   I-TELE-003_lec_2 = (9, 10, 1)
+   I-TELE-003_lec_3 = (28, 29, 1)
+   I-TELE-003_lec_4 = (16, 17, 1)
+   I-TELE-003_lec_5 = (36, 37, 1)
+   I-TELE-003_tp_0_g_0 = (14, 16, 2)
+   I-TELE-004_lec_0 = (40, 41, 1)
+   I-TELE-004_lec_1 = (60, 61, 1)
+   I-TELE-004_lec_2 = (48, 49, 1)
+   I-TELE-004_lec_3 = (64, 65, 1)
+   I-TELE-004_tp_0_g_0 = (50, 52, 2)
+   I-TELE-004_tp_1_g_0 = (70, 72, 2)
+   I-TRMO-003_lec_0 = (4, 5, 1)
+   I-TRMO-003_lec_1 = (20, 21, 1)
+   I-TRMO-003_lec_2 = (48, 49, 1)
+   I-TRMO-003_lec_3 = (61, 62, 1)
+   I-TRMO-003_lec_4 = (8, 9, 1)
+   I-TRMO-003_lec_5 = (33, 34, 1)
+   I-TRMO-003_lec_6 = (53, 54, 1)
+   I-TRMO-003_lec_7 = (65, 66, 1)
+   I-TRMO-020_ex_0_g_0 = (14, 15, 1)
+   I-TRMO-020_ex_1_g_0 = (35, 36, 1)
+   I-TRMO-020_ex_2_g_0 = (55, 56, 1)
+   I-TRMO-020_lec_0 = (1, 2, 1)
+   I-TRMO-020_lec_1 = (36, 37, 1)
+   I-TRMO-020_lec_2 = (52, 53, 1)
+   I-TRMO-020_lec_3 = (60, 61, 1)
+   I-TRMO-020_lec_4 = (13, 14, 1)
+   S-INFO-013_lec_0 = (0, 1, 1)
+   S-INFO-013_lec_1 = (33, 34, 1)
+   S-INFO-013_lec_2 = (41, 42, 1)
+   S-INFO-013_lec_3 = (61, 62, 1)
+   S-INFO-013_tp_0_g_0 = (66, 68, 2)
+   V-LANG-151_ex_0_g_0 = (55, 56, 1)
+   V-LANG-151_ex_0_g_1 = (42, 43, 1)
+   V-LANG-151_ex_0_g_2 = (42, 43, 1)
+   V-LANG-151_ex_0_g_3 = (48, 49, 1)
+   V-LANG-151_ex_0_g_4 = (43, 44, 1)
+   V-LANG-151_ex_0_g_5 = (43, 44, 1)
+   V-LANG-151_ex_0_g_6 = (56, 57, 1)
+   V-LANG-151_ex_0_g_7 = (56, 57, 1)
+   V-LANG-151_ex_1_g_0 = (76, 77, 1)
+   V-LANG-151_ex_1_g_1 = (76, 77, 1)
+   V-LANG-151_ex_1_g_2 = (66, 67, 1)
+   V-LANG-151_ex_1_g_3 = (66, 67, 1)
+   V-LANG-151_ex_1_g_4 = (66, 67, 1)
+   V-LANG-151_ex_1_g_5 = (74, 75, 1)
+   V-LANG-151_ex_1_g_6 = (72, 73, 1)
+   V-LANG-151_ex_1_g_7 = (72, 73, 1)
+   V-LANG-153_ex_0_g_0 = (2, 3, 1)
+   V-LANG-153_ex_0_g_1 = (2, 3, 1)
+   V-LANG-153_ex_0_g_2 = (2, 3, 1)
+   V-LANG-153_ex_0_g_3 = (6, 7, 1)
+   V-LANG-153_ex_1_g_0 = (27, 28, 1)
+   V-LANG-153_ex_1_g_1 = (22, 23, 1)
+   V-LANG-153_ex_1_g_2 = (22, 23, 1)
+   V-LANG-153_ex_1_g_3 = (22, 23, 1)
+   V-LANG-153_ex_2_g_0 = (42, 43, 1)
+   V-LANG-153_ex_2_g_1 = (50, 51, 1)
+   V-LANG-153_ex_2_g_2 = (50, 51, 1)
+   V-LANG-153_ex_2_g_3 = (43, 44, 1)
+   V-LANG-153_ex_3_g_0 = (62, 63, 1)
+   V-LANG-153_ex_3_g_1 = (67, 68, 1)
+   V-LANG-153_ex_3_g_2 = (67, 68, 1)
+   V-LANG-153_ex_3_g_3 = (67, 68, 1)
+   V-LANG-155_ex_0_g_0 = (14, 15, 1)
+   V-LANG-155_ex_0_g_1 = (0, 1, 1)
+   V-LANG-155_ex_0_g_2 = (4, 5, 1)
+   V-LANG-155_ex_0_g_3 = (10, 11, 1)
+   V-LANG-155_ex_1_g_0 = (35, 36, 1)
+   V-LANG-155_ex_1_g_1 = (34, 35, 1)
+   V-LANG-155_ex_1_g_2 = (21, 22, 1)
+   V-LANG-155_ex_1_g_3 = (31, 32, 1)
+   V-LANG-155_ex_2_g_0 = (58, 59, 1)
+   V-LANG-155_ex_2_g_1 = (44, 45, 1)
+   V-LANG-155_ex_2_g_2 = (47, 48, 1)
+   V-LANG-155_ex_2_g_3 = (54, 55, 1)
+   V-LANG-155_ex_3_g_0 = (77, 78, 1)
+   V-LANG-155_ex_3_g_1 = (69, 70, 1)
+   V-LANG-155_ex_3_g_2 = (71, 72, 1)
+   V-LANG-155_ex_3_g_3 = (70, 71, 1)
+32.861948013305664
+
+Process finished with exit code 0
