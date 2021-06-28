@@ -269,3 +269,10 @@ def charleroiFixedVariables(model,teacherSlots,roomSlots,options):
             roomSlots[row.Room].append(charleroiInterval)
 
             model.add(cp.start_of(charleroiInterval) == i*options["days"]*options["periods"] + options["periods"]*(row.Day-1) + row.Slot - 1)
+
+def generateSpreads(intervals,blocSize):
+    numberSpreads = math.ceil(len(intervals) / blocSize)
+    spreads = [[] for i in range(numberSpreads)]
+    for i in range(len(intervals)):
+        spreads[math.trunc(i/blocSize)].append(intervals[i])
+    return spreads

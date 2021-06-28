@@ -39,6 +39,17 @@ def sameWeekDuplicatesConstraint(model,slots,options):
                     model.add(cp.trunc(cp.start_of(interval1)/(options["days"]*options["periods"])) ==
                               cp.trunc(cp.start_of(interval2)/(options["days"]*options["periods"])))
 
+def gapBetweenDuplicatesConstraint(model,slots,options):
+    for AA,AAdata in slots.items():
+        numberGroups = len(AAdata["groups"])
+        numberLessons = len(AAdata["groups"][0])
+        if numberGroups != 1:
+            for j in range(numberLessons):
+                duplicateSlots = [AAdata["groups"][i][j] for i in range(numberGroups)]
+                for interval1,interval2 in itertools.combinations(duplicateSlots,2):
+                    model.add(options["gap"] >= cp.max(cp.start_of(interval1) - cp.end_of(interval2),
+                                            cp.start_of(interval2) - cp.end_of(interval1)))
+
 def cursusUnavailabilityConstraint(model,cursusGroups,cursusSlots,options):
     data = TFEdata.loadData(options,"Cursus")
     unavailabilityFunctions = {}
@@ -78,6 +89,23 @@ def teachersUnavailabilityConstraint(model,teacherSlots,options):
         if teacher in teacherSlots:
             for interval in teacherSlots[teacher]:
                 model.add(cp.forbid_extent(interval, unavailabilityFunction))
+
+def daysOffUnavailabilityConstraint(model,slots,options):
+    data = TFEdata.loadData(options,"Breaks")
+    unavailabilityFunction = cp.CpoStepFunction()
+    unavailabilityFunction.set_value(0, int(options["weeks"]*options["days"]*options["periods"]/options["blocs"]), 100)
+
+    for row in data.itertuples():
+        startValue = math.trunc((row.Week_start - 1) / options["blocs"]) * 20 + (row.Day_start - 1) * options[
+            "periods"] + (row.Slot_start - 1)
+        endValue = math.trunc((row.Week_end - 1) / options["blocs"]) * 20 + (row.Day_end - 1) * options[
+            "periods"] + row.Slot_end
+        unavailabilityFunction.set_value(startValue, endValue, 0)
+
+    for AAdata in slots.values():
+        for group in AAdata["groups"]:
+            for interval in group:
+                model.add(cp.forbid_extent(interval,unavailabilityFunction))
 
 # chaque séance est numérotée et chronologique (briser la symétrie)
 def orderingSlotsConstraint(model,slots):
@@ -135,6 +163,23 @@ def spreadConstraint(model,slots,options):
                         logicalAnds.append((cp.end_of(group[numberFullBlocs*spreadTime+j]) <= (modelStartEnd[0]+i+j+1)*options["days"]*options["periods"]))
                     logicalOrs.append(cp.logical_and(logicalAnds))
                 model.add(cp.logical_or(logicalOrs))
+
+def regularityConstraint(model,slots,options):
+    for AAdata in slots.values():
+        for group in AAdata["groups"]:
+            spreads = TFEvariables.generateSpreads(group,options["regu"])
+            for spread in spreads:
+                for i in range(len(spread)-1):
+                    model.add(cp.start_at_start(spread[i], spread[i + 1], delay=20))
+
+def breakSymmetryBetweenSpreads(model,slots,options):
+    for AAdata in slots.values():
+        for group in AAdata["groups"]:
+            spreads = TFEvariables.generateSpreads(group,options["regu"])
+            fullSpreads = [spread for spread in spreads if len(spread)==options["regu"]]
+            for i in range(len(fullSpreads)-1):
+                for j in range(len(fullSpreads[0])):
+                    model.add(cp.end_before_start(fullSpreads[i][j],fullSpreads[i+1][j]))
 
 def lecturesBeforeConstraint(model,lectureSlots,afterSlots,AAset,options):
     for AA in AAset:

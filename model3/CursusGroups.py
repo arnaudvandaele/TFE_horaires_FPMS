@@ -129,9 +129,9 @@ class CursusGroups:
             model.add(cp.minimize(cp.sum(cp.abs(div-threshold) for div in divisions)))
             solution = model.solve(LogVerbosity='Quiet')
             balancedGroups = {s.get_name(): s.get_value() for s in solution.get_all_var_solutions()}
-            print("!!!!!! Warning !!!!!!")
-            print("Unknown groups have been encountered. Please register them and/or review the response")
-            print(balancedGroups)
+            # print("!!!!!! Warning !!!!!!")
+            # print("Unknown groups have been encountered. Please register them and/or review the response")
+            # print(balancedGroups)
             return balancedGroups
         else:
             return {k: 0 for k in cursusGroups.keys()}

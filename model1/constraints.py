@@ -18,10 +18,10 @@ def notOverlappingConstraint(model,slots):
         model.add(cp.no_overlap(intervals))
 
 # les séances dupliquées (ex/tp) sont disjointes
-def duplicateSlotsNotOverlappingConstraint(model,slots):
-    for AAdata in slots.values():
-        if len(AAdata["groups"]) != 1:
-            model.add(cp.no_overlap([interval for group in AAdata["groups"] for interval in group]))
+# def duplicateSlotsNotOverlappingConstraint(model,slots):
+#     for AAdata in slots.values():
+#         if len(AAdata["groups"]) != 1:
+#             model.add(cp.no_overlap([interval for group in AAdata["groups"] for interval in group]))
 
 def gapBetweenDuplicatesConstraint(model,slots,options):
     for AA,AAdata in slots.items():
@@ -29,9 +29,7 @@ def gapBetweenDuplicatesConstraint(model,slots,options):
         numberLessons = len(AAdata["groups"][0])
         if numberGroups != 1:
             for j in range(numberLessons):
-                duplicateSlots = []
-                for i in range(numberGroups):
-                    duplicateSlots.append(AAdata["groups"][i][j])
+                duplicateSlots = [AAdata["groups"][i][j] for i in range(numberGroups)]
                 for interval1,interval2 in itertools.combinations(duplicateSlots,2):
                     model.add(options["gap"] >= cp.max(cp.start_of(interval1) - cp.end_of(interval2),
                                             cp.start_of(interval2) - cp.end_of(interval1)))

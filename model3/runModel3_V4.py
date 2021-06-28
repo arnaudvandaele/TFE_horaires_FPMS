@@ -11,8 +11,7 @@ import docplex.cp.model as cp
 
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
-print("Début de l'exécution : ...")
-print(current_time)
+print("Début de l'exécution : ",current_time)
 
 print("Construction du modèle : ...")
 begin = time.time()
