@@ -17,7 +17,7 @@ def generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, options, 
             caracteristics = variableName.split("_")
 
             if "ch" in variableName:
-                displayName = "Charleroi/" + str(int(caracteristics[2])+1) + "\n" + caracteristics[0]
+                displayName = "Charleroi/" + str(int(caracteristics[2])+1) + "\n" + caracteristics[0] + "\n"
             else:
                 displayName = caracteristics[0] + "\n" + typeLessons[caracteristics[1]] + "/" + str(int(caracteristics[2])+1) + "\n"
             breakFlag = False

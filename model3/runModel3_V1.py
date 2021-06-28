@@ -21,12 +21,12 @@ options = {
     "periods":4,
     "blocs":3,
     "up": True,
-    "allowed": ["BA1","BA3_CHIM","BA3_ELEC","BA3_IG","BA3_MECA","BA3_MIN"],
+    "allowed": None,
     "quadri": "Q1",
     "delta": 0,
-    "data": "listeCoursM1.xlsx",
-    "folder": "M3_V1_ba1_ba3_M",
-    "groupAuto": False
+    "data": "listeCoursM3_V3.xlsx", #M1/M3_V2/M3_V3
+    "folder": "M3_V3",
+    "groupAuto": False #True/False
 }
 
 lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(options)
@@ -60,9 +60,9 @@ if solution:
 
     # solution.write()
     pass
-    # TFEtimetable.generateAndSaveTimetables(solution,cursusDict,teachersDict,roomsDict,options,colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution,teachersDict,cursusDict,roomsDict,options,colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, options, colors.COLORS)
+    TFEtimetable.generateAndSaveTimetables(solution,cursusDict,teachersDict,roomsDict,options,colors.COLORS)
+    TFEtimetable.generateAndSaveTimetables(solution,teachersDict,cursusDict,roomsDict,options,colors.COLORS)
+    TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, options, colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_A", options,colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_C", options,colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_E", options,colors.COLORS)
