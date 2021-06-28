@@ -20,12 +20,12 @@ options = {
     "periods":4,
     "blocs":3,
     "up": True,
-    "allowed": None,
+    "allowed": None, #["BA1","BA2","BA3_CHIM","BA3_ELEC","BA3_IG","BA3_MECA","BA3_MIN"]
     "quadri": "Q1",
     "delta": 0,
-    "data": "listeCoursM3_V3.xlsx", #M1/M3_V2/M3_V3
-    "folder": "M3_V3",
-    "groupAuto": False #True/False
+    "data": "datasetAnglaisLocaux.xlsx", #dataset-Base/Anglais/AnglaisLocaux
+    "folder": "4SegmentsStrategies",
+    "groupAuto": False
 }
 
 lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(options)

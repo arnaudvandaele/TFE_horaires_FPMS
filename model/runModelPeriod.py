@@ -24,8 +24,8 @@ options = {
     "allowed": None,
     "quadri": "Q1",
     "delta": 0,
-    "data": "listeCoursP1.xlsx",
-    "folder": "M4_P1",
+    "data": "datasetP1.xlsx",
+    "folder": "2SegmentsP1",
     "groupAuto": False
 }
 

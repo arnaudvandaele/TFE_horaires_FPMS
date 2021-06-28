@@ -19,12 +19,13 @@ options = {
     "periods":4,
     "blocs": 1,
     "up": True,
-    "allowed": None,
+    "allowed": ["BA1"],
     "quadri": "Q1",
     "delta": 0,
-    "data": "listeCoursM1.xlsx",
-    "folder": "M1_V1",
+    "data": "datasetBase.xlsx",
+    "folder": "12SegmentsReguBA1",
     "gap": 16,
+    "regu": 6,
     "groupAuto": True
 }
 
@@ -46,10 +47,14 @@ TFEconstraints.startAndEndConstraint(model,exercisesDict,options)
 TFEconstraints.startAndEndConstraint(model,tpsDict,options)
 TFEconstraints.startAndEndConstraint(model,projectsDict,options)
 
-TFEconstraints.orderingSlotsConstraint(model,lecturesDict)
-TFEconstraints.orderingSlotsConstraint(model,exercisesDict)
-TFEconstraints.orderingSlotsConstraint(model,tpsDict)
-TFEconstraints.orderingSlotsConstraint(model,projectsDict)
+TFEconstraints.regularityConstraint(model,lecturesDict,options)
+TFEconstraints.regularityConstraint(model,exercisesDict,options)
+TFEconstraints.regularityConstraint(model,tpsDict,options)
+TFEconstraints.regularityConstraint(model,projectsDict,options)
+TFEconstraints.breakSymmetryBetweenSpreads(model,lecturesDict,options)
+TFEconstraints.breakSymmetryBetweenSpreads(model,exercisesDict,options)
+TFEconstraints.breakSymmetryBetweenSpreads(model,tpsDict,options)
+TFEconstraints.breakSymmetryBetweenSpreads(model,projectsDict,options)
 
 print(time.time()-begin)
 

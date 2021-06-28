@@ -1,6 +1,9 @@
 import variables as TFEvariables
 import constraints as TFEconstraints
 import timetable as TFEtimetable
+import objectives as TFEobjectives
+import callbacks as TFEcallbacks
+import initialization as TFEinitialization
 import data.colors as colors
 
 import time
@@ -17,49 +20,53 @@ options = {
     "weeks":12,
     "days":5,
     "periods":4,
-    "blocs": 1,
+    "blocs":3,
     "up": True,
     "allowed": None,
     "quadri": "Q1",
     "delta": 0,
-    "data": "listeCoursM1.xlsx",
-    "folder": "M1_V2_ba1",
-    "gap": 16,
-    "regu": 6,
-    "groupAuto": True
+    "data": "datasetFinal.xlsx",
+    "folder": "4SegmentsFinal",
+    "groupAuto": False
 }
 
 lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(options)
+
+TFEconstraints.cursusUnavailabilityConstraint(model,cursusGroups,cursusDict,options)
 
 TFEconstraints.firstOrThirdSlotConstraint(model,tpsDict,options)
 TFEconstraints.firstOrThirdSlotConstraint(model,projectsDict,options)
 TFEconstraints.notOverlappingConstraint(model,cursusDict)
 TFEconstraints.notOverlappingConstraint(model,teachersDict)
 TFEconstraints.notOverlappingConstraint(model,roomsDict)
-TFEconstraints.gapBetweenDuplicatesConstraint(model,exercisesDict,options)
-TFEconstraints.gapBetweenDuplicatesConstraint(model,tpsDict,options)
+TFEconstraints.sameWeekDuplicatesConstraint(model,exercisesDict,options)
+TFEconstraints.sameWeekDuplicatesConstraint(model,tpsDict,options)
 
-TFEconstraints.cursusUnavailabilityConstraint(model,cursusGroups,cursusDict,options)
-TFEconstraints.teachersUnavailabilityConstraint(model,teachersDict,options)
+TFEconstraints.spreadConstraint(model,lecturesDict,options)
+TFEconstraints.spreadConstraint(model,exercisesDict,options)
+TFEconstraints.spreadConstraint(model,tpsDict,options)
+TFEconstraints.spreadConstraint(model,projectsDict,options)
 
-TFEconstraints.startAndEndConstraint(model,lecturesDict,options)
-TFEconstraints.startAndEndConstraint(model,exercisesDict,options)
-TFEconstraints.startAndEndConstraint(model,tpsDict,options)
-TFEconstraints.startAndEndConstraint(model,projectsDict,options)
+TFEconstraints.lecturesBeforeConstraint(model,lecturesDict,[exercisesDict,tpsDict],AAset,options)
 
-TFEconstraints.regularityConstraint(model,lecturesDict,options)
-TFEconstraints.regularityConstraint(model,exercisesDict,options)
-TFEconstraints.regularityConstraint(model,tpsDict,options)
-TFEconstraints.regularityConstraint(model,projectsDict,options)
-TFEconstraints.breakSymmetryBetweenSpreads(model,lecturesDict,options)
-TFEconstraints.breakSymmetryBetweenSpreads(model,exercisesDict,options)
-TFEconstraints.breakSymmetryBetweenSpreads(model,tpsDict,options)
-TFEconstraints.breakSymmetryBetweenSpreads(model,projectsDict,options)
+TFEinitialization.simultaneousGroups(model,exercisesDict["I-PHYS-020"],exercisesDict["I-SDMA-020"])
+TFEinitialization.fixedSlots(model,projectsDict["I-POLY-011"],(5,3),options)
+TFEinitialization.fixedSlots(model,projectsDict["I-ILIA-024"],(5,3),options)
+
+objectiveFunctions = []
+coefficients = []
+objectiveFunctions.append(TFEobjectives.avoidAfternoonSize1([lecturesDict],[],options))
+coefficients.append(4)
+objectiveFunctions.append(TFEobjectives.avoidLastSlotSize1([exercisesDict],["V-LANG-151","V-LANG-153","V-LANG-155"],options))
+coefficients.append(1)
+model.minimize(cp.scal_prod(objectiveFunctions,coefficients))
+
+model.add_solver_callback(TFEcallbacks.CallbackSolutionPrintingStatus())
 
 print(time.time()-begin)
 
 model.write_information()
-solution = model.solve()
+solution = model.solve(TimeLimit=60*60*8)
 
 if solution:
     print("Sauvegarde/affichage des solutions : ...")
@@ -71,7 +78,8 @@ if solution:
     # TFEtimetable.generateAndSaveTimetables(solution,teachersDict,cursusDict,roomsDict,options,colors.COLORS)
     # TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, options, colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_A", options,colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_B", options,colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_C", options,colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_E", options,colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, roomsDict, teachersDict, cursusDict, "Ho.12", options, colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, teachersDict, cursusDict, roomsDict, "Vandaele A", options,colors.COLORS)
 
