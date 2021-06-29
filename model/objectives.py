@@ -1,8 +1,8 @@
 import docplex.cp.model as cp
 
-def avoidAfternoonSize1(arraySlots,blacklist,options):
+def avoidAfternoonSize1(arraySlots, blacklist, constants):
     afternoonPenalty = cp.CpoSegmentedFunction()
-    for i in range(int(options["weeks"] * options["days"] * options["periods"] / options["blocs"])):
+    for i in range(int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"])):
         slotNumber = i%4
         if slotNumber == 0:
             afternoonPenalty.set_value(i,i+1,0)
@@ -17,9 +17,9 @@ def avoidAfternoonSize1(arraySlots,blacklist,options):
          AAdata["groups"] for interval in group if AA not in blacklist])
     return objectiveValue
 
-def avoidAfternoonSize2(arraySlots,blacklist,options):
+def avoidAfternoonSize2(arraySlots, blacklist, constants):
     afternoonPenalty = cp.CpoSegmentedFunction()
-    for i in range(int((options["weeks"] * options["days"] * options["periods"] / options["blocs"]) / 2 + 1)):
+    for i in range(int((constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]) / 2 + 1)):
         slotNumber = i % 2
         if slotNumber == 0:
             afternoonPenalty.set_value(2 * i, 2 * (i + 1), 1)
@@ -31,9 +31,9 @@ def avoidAfternoonSize2(arraySlots,blacklist,options):
          AAdata["groups"] for interval in group if AA not in blacklist])
     return objectiveValue
 
-def avoidLastSlotSize1(arraySlots,blacklist,options):
+def avoidLastSlotSize1(arraySlots, blacklist, constants):
     lastSlotPenalty = cp.CpoSegmentedFunction()
-    for i in range(int(options["weeks"] * options["days"] * options["periods"] / options["blocs"])):
+    for i in range(int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"])):
         slotNumber = i % 4
         if slotNumber == 3:
             lastSlotPenalty.set_value(i, i + 1, 1)

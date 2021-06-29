@@ -3,14 +3,14 @@ import math
 import matplotlib.pyplot as plt
 import random
 
-def generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, options, colors):
+def generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, constants, colors):
     generateColors = False
     if colors is None:
         colors = {}
     typeLessons = {"lec": "Cours","ex": "Exercices","tp": "TP","pr": "Projet"}
     timetables = {}
     for majorItem,majorIntevals in majorSlots.items():
-        timetable = np.full((options["periods"],int(options["days"]*options["weeks"]/options["blocs"])),"",dtype=object)
+        timetable = np.full((constants["slots"], int(constants["days"] * constants["weeks"] / constants["segmentSize"])), "", dtype=object)
         for majorInteval in majorIntevals:
             variableName = majorInteval.get_name()
             value = solution[variableName]
@@ -55,8 +55,8 @@ def generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, options, 
                 displayName += "2"
             elif "ch4" in variableName:
                 displayName += "4"
-            base = math.trunc(value[0]/options["periods"])
-            rest = value[0]%options["periods"]
+            base = math.trunc(value[0] / constants["slots"])
+            rest = value[0] % constants["slots"]
             timetable[rest][base] = displayName
 
             if "Charleroi" not in displayName and caracteristics[0] not in colors:
@@ -73,12 +73,12 @@ def generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, options, 
         print(colors)
     return timetables,colors
 
-def saveTimetables(timetables,colors,options):
+def saveTimetables(timetables, colors, constants):
     for item,timetable in timetables.items():
         m,n = timetable.shape
         k = 1
         for j in range(n):
-            day = j%options["days"]
+            day = j % constants["days"]
             if day == 0:
                 fig, ax = plt.subplots()
                 title = item + " : Segment " + str(k)
@@ -90,7 +90,7 @@ def saveTimetables(timetables,colors,options):
                 ax.set_xticklabels([])
                 ax.set_yticklabels(["17h45", "15h45", "15h30", "13h30", "12h30", "10h30", "10h15", "8h15"], fontsize=6)
                 ax.set_xticklabels(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], minor=True)
-                ax.set_xlim(0, options["days"])
+                ax.set_xlim(0, constants["days"])
                 ax.set_ylim(0, 4.750)
                 ax.grid()
                 ax.set_axisbelow(True)
@@ -148,15 +148,15 @@ def saveTimetables(timetables,colors,options):
                             ax.text(day + 0.5, center, timetables[item][i][j], fontsize=6, horizontalalignment='center',
                                     verticalalignment='center',color=colorText)
             if day == 4:
-                fig.savefig("results/"+options["folder"]+"/"+nameFile+".jpg")
+                fig.savefig("results/" + constants["folderResults"] + "/" + nameFile + ".jpg")
                 plt.close(fig)
 
-def displayTimetable(timetables,colors,item,options):
+def displayTimetable(timetables, colors, item, constants):
     if item in timetables:
         m,n = timetables[item].shape
         k = 1
         for j in range(n):
-            day = j%options["days"]
+            day = j % constants["days"]
             if day == 0:
                 fig, ax = plt.subplots()
                 title = item + " : Segment " + str(k)
@@ -167,7 +167,7 @@ def displayTimetable(timetables,colors,item,options):
                 ax.set_xticklabels([])
                 ax.set_yticklabels(["17h45","15h45","15h30","13h30","12h30","10h30","10h15","8h15"],fontsize=6)
                 ax.set_xticklabels(["Monday","Tuesday","Wednesday","Thursday","Friday"],minor=True)
-                ax.set_xlim(0, options["days"])
+                ax.set_xlim(0, constants["days"])
                 ax.set_ylim(0, 4.750)
                 ax.grid()
                 ax.set_axisbelow(True)
@@ -227,10 +227,10 @@ def displayTimetable(timetables,colors,item,options):
             if day == 4:
                 plt.show()
 
-def generateAndSaveTimetables(solution,majorSlots,minorSlots1,minorSlots2,options,colors):
-    timetables,colors = generateTimetables(solution,majorSlots,minorSlots1,minorSlots2,options,colors)
-    saveTimetables(timetables,colors,options)
+def generateAndSaveTimetables(solution, majorSlots, minorSlots1, minorSlots2, constants, colors):
+    timetables,colors = generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, constants, colors)
+    saveTimetables(timetables, colors, constants)
 
-def generateAndDisplayTimetable(solution,majorSlots,minorSlots1,minorSlots2,item,options,colors):
-    timetables,colors = generateTimetables(solution,majorSlots,minorSlots1,minorSlots2,options,colors)
-    displayTimetable(timetables,colors,item,options)
+def generateAndDisplayTimetable(solution, majorSlots, minorSlots1, minorSlots2, item, constants, colors):
+    timetables,colors = generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, constants, colors)
+    displayTimetable(timetables, colors, item, constants)

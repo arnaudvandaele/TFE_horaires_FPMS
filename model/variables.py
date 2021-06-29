@@ -6,8 +6,7 @@ import pandas as pd
 import math
 from collections import defaultdict
 
-# liste de variables au lieu de faire variable par variable ?
-def instantiateVariables(options):
+def instantiateVariables(constants):
     lectureSlots = {}
     exerciseSlots = {}
     tpSlots = {}
@@ -15,7 +14,7 @@ def instantiateVariables(options):
     cursusSlots = defaultdict(list)
     teacherSlots = defaultdict(list)
     roomSlots = defaultdict(list)
-    cursusGroups = TFEcursusGroups.CursusGroups(options)
+    cursusGroups = TFEcursusGroups.CursusGroups(constants["fileDataset"])
     AAset = set()
     spreadDict = {
         1.3: (1,3),
@@ -29,13 +28,14 @@ def instantiateVariables(options):
         7.12: (7,12),
         10.12: (10,12)
     }
-    nbrSlots = int(options["weeks"]*options["days"]*options["periods"]/options["blocs"])
+    nbrSlots = int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"])
+    delta = 0
 
-    dataMons = TFEdata.loadData(options,"TFE")
+    dataMons = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "TFE")
     for row in dataMons.itertuples():
 
         listCursus = row.Cursus.split(",")
-        if options["allowed"] is not None and not any(cursus in listCursus for cursus in options["allowed"]):
+        if not any(constants["cursus"][cursus] is True for cursus in listCursus):
             continue
 
         if any(row.ID_AA in slots for slots in [lectureSlots,exerciseSlots,tpSlots,projectSlots]):
@@ -53,12 +53,12 @@ def instantiateVariables(options):
                 "cursus": listCursus
             }
             trueNumberLessons = math.ceil(row.Lectures / 2)
-            if options["up"]:
-                modelnumberLessons = math.ceil(trueNumberLessons / options["blocs"])
-                options["delta"] += modelnumberLessons*options["blocs"] - trueNumberLessons
+            if constants["roundUp"]:
+                modelnumberLessons = math.ceil(trueNumberLessons / constants["segmentSize"])
+                delta += modelnumberLessons * constants["segmentSize"] - trueNumberLessons
             else:
-                modelnumberLessons = math.floor(trueNumberLessons / options["blocs"])
-                options["delta"] -= trueNumberLessons - modelnumberLessons * options["blocs"]
+                modelnumberLessons = math.floor(trueNumberLessons / constants["segmentSize"])
+                delta -= trueNumberLessons - modelnumberLessons * constants["segmentSize"]
 
             lectureIntervals = cp.interval_var_list(modelnumberLessons, start=(0, nbrSlots - 1), end=(1, nbrSlots),
                                                     size=1, length=1 ,name=row.ID_AA + "_lec")
@@ -73,7 +73,7 @@ def instantiateVariables(options):
                     roomSlots[r].extend(lectureIntervals)
 
         if not pd.isna(row.Exercises):
-            listDivisions = cursusGroups.generateBalancedGroups(listCursus, row.Ex_groups,options)
+            listDivisions = cursusGroups.generateBalancedGroups(listCursus, row.Ex_groups, constants["groupAuto"])
             exerciseSlots[row.ID_AA] = {
                 "spread": spreadDict[row.Ex_spread],
                 "groups": [
@@ -86,12 +86,12 @@ def instantiateVariables(options):
             listRooms = []
             if not pd.isna(row.Ex_rooms):
                 listRooms = row.Ex_rooms.split(",")
-            if options["up"]:
-                modelnumberLessons = math.ceil(trueNumberLessons / options["blocs"])
-                options["delta"] += (modelnumberLessons*options["blocs"] - trueNumberLessons)*row.Ex_groups
+            if constants["roundUp"]:
+                modelnumberLessons = math.ceil(trueNumberLessons / constants["segmentSize"])
+                delta += (modelnumberLessons * constants["segmentSize"] - trueNumberLessons) * row.Ex_groups
             else:
-                modelnumberLessons = math.floor(trueNumberLessons / options["blocs"])
-                options["delta"] -= (trueNumberLessons - modelnumberLessons * options["blocs"])*row.Ex_groups
+                modelnumberLessons = math.floor(trueNumberLessons / constants["segmentSize"])
+                delta -= (trueNumberLessons - modelnumberLessons * constants["segmentSize"]) * row.Ex_groups
             for g in range(row.Ex_groups):
                 for i in range(modelnumberLessons):
                     exerciseInterval = cp.interval_var(start=(0, nbrSlots - 1), end=(1, nbrSlots), size=1,
@@ -101,10 +101,6 @@ def instantiateVariables(options):
                     for k,v in listDivisions.items():
                         if v == g:
                             cursusSlots[k].append(exerciseInterval)
-                    # for t in row.Ex_teachers.split(","):
-                    #     teacherSlots[t].append(exerciseInterval)
-                    # for r in row.Ex_rooms.split(","):
-                    #     roomSlots[r].append(exerciseInterval)
                     if row.Ex_split != 0:
                         numberCycles = math.ceil(len(listTeachers)/row.Ex_split)
                         rest = len(listTeachers)%row.Ex_split if row.Ex_split != 1 else 1
@@ -133,7 +129,7 @@ def instantiateVariables(options):
                             roomSlots[r].append(exerciseInterval)
 
         if not pd.isna(row.TP):
-            listDivisions = cursusGroups.generateBalancedGroups(listCursus, row.TP_groups,options)
+            listDivisions = cursusGroups.generateBalancedGroups(listCursus, row.TP_groups, constants["groupAuto"])
             tpSlots[row.ID_AA] = {
                 "spread": spreadDict[row.TP_spread],
                 "groups": [
@@ -142,12 +138,12 @@ def instantiateVariables(options):
                 "cursus": listCursus
             }
             trueNumberLessons = int(row.TP / row.TP_duration)
-            if options["up"]:
-                modelnumberLessons = math.ceil(trueNumberLessons / options["blocs"])
-                options["delta"] += (modelnumberLessons*options["blocs"] - trueNumberLessons)*row.TP_groups
+            if constants["roundUp"]:
+                modelnumberLessons = math.ceil(trueNumberLessons / constants["segmentSize"])
+                delta += (modelnumberLessons * constants["segmentSize"] - trueNumberLessons) * row.TP_groups
             else:
-                modelnumberLessons = math.floor(trueNumberLessons / options["blocs"])
-                options["delta"] -= (trueNumberLessons - modelnumberLessons * options["blocs"])*row.TP_groups
+                modelnumberLessons = math.floor(trueNumberLessons / constants["segmentSize"])
+                delta -= (trueNumberLessons - modelnumberLessons * constants["segmentSize"]) * row.TP_groups
             for g in range(row.TP_groups):
                 for i in range(modelnumberLessons):
                     tpInterval = cp.interval_var(start=(0, nbrSlots - 2), end=(2, nbrSlots), size=2,
@@ -172,12 +168,12 @@ def instantiateVariables(options):
                 "cursus": listCursus
             }
             trueNumberLessons = int(row.Project / row.Pr_duration)
-            if options["up"]:
-                modelnumberLessons = math.ceil(trueNumberLessons / options["blocs"])
-                options["delta"] += modelnumberLessons*options["blocs"] - trueNumberLessons
+            if constants["roundUp"]:
+                modelnumberLessons = math.ceil(trueNumberLessons / constants["segmentSize"])
+                delta += modelnumberLessons * constants["segmentSize"] - trueNumberLessons
             else:
-                modelnumberLessons = math.floor(trueNumberLessons / options["blocs"])
-                options["delta"] -= trueNumberLessons - modelnumberLessons * options["blocs"]
+                modelnumberLessons = math.floor(trueNumberLessons / constants["segmentSize"])
+                delta -= trueNumberLessons - modelnumberLessons * constants["segmentSize"]
 
             projectIntervals = cp.interval_var_list(modelnumberLessons,
                                                     start=(0,nbrSlots-2),
@@ -191,13 +187,13 @@ def instantiateVariables(options):
                 cursusSlots[g].extend(projectIntervals)
             for t in row.Pr_teachers.split(","):
                 teacherSlots[t].extend(projectIntervals)
-    print("delta",options["delta"])
+    print("delta", delta)
     return lectureSlots,exerciseSlots,tpSlots,projectSlots,cursusSlots,teacherSlots,roomSlots,cursusGroups,AAset
 
-def charleroiVariables(model,teacherSlots,roomSlots,options):
-    nbrSlots = int(options["weeks"] * options["days"] * options["periods"] / options["blocs"])
-    numberSegments = int(options["weeks"]/options["blocs"])
-    dataCharleroi = TFEdata.loadData(options, "Charleroi")
+def charleroiVariables(model, teacherSlots, roomSlots, constants):
+    nbrSlots = int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"])
+    numberSegments = int(constants["weeks"] / constants["segmentSize"])
+    dataCharleroi = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "Charleroi")
     for row in dataCharleroi.itertuples():
         listAA = row.AA.split(",")
         if len(listAA) == 1:
@@ -215,7 +211,7 @@ def charleroiVariables(model,teacherSlots,roomSlots,options):
                 teacherSlots[row.Teacher].append(charleroiInterval)
                 roomSlots[row.Room].append(charleroiInterval)
 
-                blocSize4Function = cp.CpoStepFunction(steps=[(i,1 if i%4 == 0 else 0) for i in range(int(options["weeks"]*options["days"]*options["periods"]/options["blocs"]))])
+                blocSize4Function = cp.CpoStepFunction(steps=[(i,1 if i%4 == 0 else 0) for i in range(int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]))])
                 model.add(cp.forbid_start(interval=charleroiInterval, function=blocSize4Function))
 
         for i in range(partialIntervalPerWeek):
@@ -228,7 +224,7 @@ def charleroiVariables(model,teacherSlots,roomSlots,options):
                 roomSlots[row.Room].append(charleroiInterval)
 
                 blocSize4Function = cp.CpoStepFunction(steps=[(i, 1 if i % 2 == 0 else 0) for i in range(
-                    int(options["weeks"] * options["days"] * options["periods"] / options["blocs"]))])
+                    int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]))])
                 model.add(cp.forbid_start(interval=charleroiInterval, function=blocSize4Function))
 
         for i in range(numberFullIntervalsPerWeek):
@@ -243,9 +239,9 @@ def charleroiVariables(model,teacherSlots,roomSlots,options):
                 model.add(cp.start_of(charleroiIntervals[numberFullIntervalsPerWeek * numberSegments + i]) >= i*20)
                 model.add(cp.end_of(charleroiIntervals[numberFullIntervalsPerWeek * numberSegments + i]) <= (i+1)*20)
 
-def charleroiFixedVariables(model,teacherSlots,roomSlots,options):
-    nbrSlots = int(options["weeks"] * options["days"] * options["periods"] / options["blocs"])
-    dataCharleroi = TFEdata.loadData(options, "CharleroiFixed")
+def charleroiFixedVariables(model, teacherSlots, roomSlots, constants):
+    nbrSlots = int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"])
+    dataCharleroi = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "CharleroiFixed")
     spreadDict = {
         1.3: (1, 3),
         1.6: (1, 6),
@@ -261,14 +257,14 @@ def charleroiFixedVariables(model,teacherSlots,roomSlots,options):
     for row in dataCharleroi.itertuples():
         variableName = row.AA
         spread = spreadDict[row.Week]
-        modelStartEnd = (math.floor((spread[0] - 1) / options["blocs"]), math.ceil(spread[1] / options["blocs"]))
+        modelStartEnd = (math.floor((spread[0] - 1) / constants["segmentSize"]), math.ceil(spread[1] / constants["segmentSize"]))
         for i in range(modelStartEnd[0],modelStartEnd[1]):
             charleroiInterval = cp.interval_var(start=(0,nbrSlots-2),end=(2,nbrSlots),size=2,name=variableName+"_ch2_"+str(i))
 
             teacherSlots[row.Teacher].append(charleroiInterval)
             roomSlots[row.Room].append(charleroiInterval)
 
-            model.add(cp.start_of(charleroiInterval) == i*options["days"]*options["periods"] + options["periods"]*(row.Day-1) + row.Slot - 1)
+            model.add(cp.start_of(charleroiInterval) == i * constants["days"] * constants["slots"] + constants["slots"] * (row.Day - 1) + row.Slot - 1)
 
 def generateSpreads(intervals,blocSize):
     numberSpreads = math.ceil(len(intervals) / blocSize)

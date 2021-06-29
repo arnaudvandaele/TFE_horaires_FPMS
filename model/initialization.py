@@ -17,10 +17,10 @@ def simultaneousGroups(model,slots1,slots2):
     else:
         print("ko")
 
-def fixedSlots(model,slots,timing,options):
+def fixedSlots(model, slots, timing, constants):
     numberSlots = len(slots["groups"][0])
-    startWeek = math.floor((slots["spread"][0]-1)/options["blocs"])
-    endWeek = math.ceil(slots["spread"][1]/options["blocs"])
-    if endWeek - startWeek == numberSlots and 1 <= timing[0] <= options["days"] and 1 <= timing[1] <= options["periods"]:
+    startWeek = math.floor((slots["spread"][0]-1) / constants["segmentSize"])
+    endWeek = math.ceil(slots["spread"][1] / constants["segmentSize"])
+    if endWeek - startWeek == numberSlots and 1 <= timing[0] <= constants["days"] and 1 <= timing[1] <= constants["slots"]:
         for i,slot in enumerate(slots["groups"][0]):
-            model.add(cp.start_of(slot) == i*options["days"]*options["periods"] + (timing[0]-1)*options["periods"]+timing[1]-1)
+            model.add(cp.start_of(slot) == i * constants["days"] * constants["slots"] + (timing[0] - 1) * constants["slots"] + timing[1] - 1)

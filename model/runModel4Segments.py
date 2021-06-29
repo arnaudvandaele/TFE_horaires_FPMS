@@ -9,42 +9,49 @@ import docplex.cp.model as cp
 
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
-print("Début de l'exécution : ",current_time)
+print("Beginning : ",current_time)
 
-print("Construction du modèle : ...")
+print("Building model : ...")
 begin = time.time()
 model = cp.CpoModel()
-options = {
+constants = {
     "weeks":12,
     "days":5,
-    "periods":4,
-    "blocs":3,
-    "up": True,
-    "allowed": None, #["BA1","BA2","BA3_CHIM","BA3_ELEC","BA3_IG","BA3_MECA","BA3_MIN"]
+    "slots":4,
+    "segmentSize":3,
+    "roundUp": True,
+    "cursus": {
+        "BA1": True,
+        "BA2": False,
+        "BA3_CHIM": False,
+        "BA3_ELEC": False,
+        "BA3_IG": False,
+        "BA3_MECA": False,
+        "BA3_MIN": False
+    },
     "quadri": "Q1",
-    "delta": 0,
-    "data": "datasetAnglaisLocaux.xlsx", #dataset-Base/Anglais/AnglaisLocaux
-    "folder": "4SegmentsStrategies",
+    "fileDataset": "datasetAnglais.xlsx", #dataset-Base/Anglais/AnglaisLocaux
+    "folderResults": "4SegmentsStrategies",
     "groupAuto": False
 }
 
-lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(options)
+lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(constants)
 
-TFEconstraints.cursusUnavailabilityConstraint(model,cursusGroups,cursusDict,options)
-TFEconstraints.teachersUnavailabilityConstraint(model,teachersDict,options)
+TFEconstraints.cursusUnavailabilityConstraint(model, cursusGroups, cursusDict, constants)
+TFEconstraints.teachersUnavailabilityConstraint(model, teachersDict, constants)
 
-TFEconstraints.firstOrThirdSlotConstraint(model,tpsDict,options)
-TFEconstraints.firstOrThirdSlotConstraint(model,projectsDict,options)
+TFEconstraints.firstOrThirdSlotConstraint(model, tpsDict, constants)
+TFEconstraints.firstOrThirdSlotConstraint(model, projectsDict, constants)
 TFEconstraints.notOverlappingConstraint(model,cursusDict)
 TFEconstraints.notOverlappingConstraint(model,teachersDict)
 TFEconstraints.notOverlappingConstraint(model,roomsDict)
-TFEconstraints.sameWeekDuplicatesConstraint(model,exercisesDict,options)
-TFEconstraints.sameWeekDuplicatesConstraint(model,tpsDict,options)
+TFEconstraints.sameWeekDuplicatesConstraint(model, exercisesDict, constants)
+TFEconstraints.sameWeekDuplicatesConstraint(model, tpsDict, constants)
 
-TFEconstraints.spreadConstraint(model,lecturesDict,options)
-TFEconstraints.spreadConstraint(model,exercisesDict,options)
-TFEconstraints.spreadConstraint(model,tpsDict,options)
-TFEconstraints.spreadConstraint(model,projectsDict,options)
+TFEconstraints.spreadConstraint(model, lecturesDict, constants)
+TFEconstraints.spreadConstraint(model, exercisesDict, constants)
+TFEconstraints.spreadConstraint(model, tpsDict, constants)
+TFEconstraints.spreadConstraint(model, projectsDict, constants)
 
 model.add_solver_callback(TFEcallbacks.CallbackSolutionPrintingStatus())
 
@@ -54,19 +61,19 @@ model.write_information()
 solution = model.solve(TimeLimit=60*60*8)
 
 if solution:
-    print("Sauvegarde/affichage des solutions : ...")
+    print("Saving/displaying solutions : ...")
     begin = time.time()
 
     # solution.write()
     pass
-    TFEtimetable.generateAndSaveTimetables(solution,cursusDict,teachersDict,roomsDict,options,colors.COLORS)
-    TFEtimetable.generateAndSaveTimetables(solution,teachersDict,cursusDict,roomsDict,options,colors.COLORS)
-    TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, options, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_A", options,colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_C", options,colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_E", options,colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, roomsDict, teachersDict, cursusDict, "Ho.12", options, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, teachersDict, cursusDict, roomsDict, "Vandaele A", options,colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, cursusDict, teachersDict, roomsDict, constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, teachersDict, cursusDict, roomsDict, constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_A", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_C", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_E", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, roomsDict, teachersDict, cursusDict, "Ho.12", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, teachersDict, cursusDict, roomsDict, "Vandaele A", constants, colors.COLORS)
 
     print(time.time() - begin)
 else:

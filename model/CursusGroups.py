@@ -3,8 +3,8 @@ import docplex.cp.model as cp
 
 class CursusGroups:
 
-    def __init__(self,options):
-        self.cursusData = TFEdata.loadCursusData(options)
+    def __init__(self, fileDataset):
+        self.cursusData = TFEdata.loadCursusData(fileDataset)
         self.knownGroups = {
             ("BA1_A", "BA1_B", "BA1_C", "BA1_D", "BA1_E", "BA1_F", "BA1_G", "BA1_H", 8): {
                 "BA1_A": 0,
@@ -106,11 +106,11 @@ class CursusGroups:
 
         return cursusGroups
 
-    def generateBalancedGroups(self,cursusList,numberDivisions,options):
+    def generateBalancedGroups(self, cursusList, numberDivisions, groupAuto):
         cursusGroups = self.getGroupsWithCapacity(cursusList)
         cursusGroupsCheck = self.getGroups(cursusList)
         cursusGroupsCheck.append(numberDivisions)
-        if options["groupAuto"] is False and tuple(cursusGroupsCheck) in self.knownGroups:
+        if groupAuto is False and tuple(cursusGroupsCheck) in self.knownGroups:
             return self.knownGroups[tuple(cursusGroupsCheck)]
 
         if numberDivisions != 1:

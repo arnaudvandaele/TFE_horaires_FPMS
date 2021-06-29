@@ -1,13 +1,13 @@
 import pandas as pd
 import math
 
-def loadData(options,sheet):
-    data = pd.read_excel("../data/"+options["data"], sheet_name=sheet, engine="openpyxl",dtype=object)
-    data = data[data["Quadri"]==options["quadri"]]
+def loadData(fileDataset,quadri,sheet):
+    data = pd.read_excel("../data/"+fileDataset, sheet_name=sheet, engine="openpyxl",dtype=object)
+    data = data[data["Quadri"]==quadri]
     return data
 
-def loadCursusData(options):
-    data = pd.read_excel("../data/"+options["data"], sheet_name="Groups",engine="openpyxl",dtype=object)
+def loadCursusData(fileDataset):
+    data = pd.read_excel("../data/"+fileDataset, sheet_name="Groups",engine="openpyxl",dtype=object)
     cursusData = {}
     for row in data.itertuples():
         cursusData[row.Cursus] = {}

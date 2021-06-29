@@ -8,53 +8,60 @@ import docplex.cp.model as cp
 
 t = time.localtime()
 current_time = time.strftime("%H:%M:%S", t)
-print("Début de l'exécution : ",current_time)
+print("Beginning : ",current_time)
 
-print("Construction du modèle : ...")
+print("Building model : ...")
 begin = time.time()
 model = cp.CpoModel()
-options = {
+constants = {
     "weeks":12,
     "days":5,
-    "periods":4,
-    "blocs": 1,
-    "up": True,
-    "allowed": ["BA1"],
+    "slots":4,
+    "segmentSize": 1,
+    "roundUp": True,
+    "cursus": {
+        "BA1": False,
+        "BA2": True,
+        "BA3_CHIM": False,
+        "BA3_ELEC": False,
+        "BA3_IG": False,
+        "BA3_MECA": False,
+        "BA3_MIN": False
+    },
     "quadri": "Q1",
-    "delta": 0,
-    "data": "datasetBase.xlsx",
-    "folder": "12SegmentsReguBA1",
+    "fileDataset": "datasetBase.xlsx",
+    "folderResults": "12SegmentsReguBA1",
     "gap": 16,
-    "regu": 6,
+    "regularitySize": 6,
     "groupAuto": True
 }
 
-lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(options)
+lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(constants)
 
-TFEconstraints.firstOrThirdSlotConstraint(model,tpsDict,options)
-TFEconstraints.firstOrThirdSlotConstraint(model,projectsDict,options)
+TFEconstraints.firstOrThirdSlotConstraint(model, tpsDict, constants)
+TFEconstraints.firstOrThirdSlotConstraint(model, projectsDict, constants)
 TFEconstraints.notOverlappingConstraint(model,cursusDict)
 TFEconstraints.notOverlappingConstraint(model,teachersDict)
 TFEconstraints.notOverlappingConstraint(model,roomsDict)
-TFEconstraints.gapBetweenDuplicatesConstraint(model,exercisesDict,options)
-TFEconstraints.gapBetweenDuplicatesConstraint(model,tpsDict,options)
+TFEconstraints.gapBetweenDuplicatesConstraint(model, exercisesDict, constants)
+TFEconstraints.gapBetweenDuplicatesConstraint(model, tpsDict, constants)
 
-TFEconstraints.cursusUnavailabilityConstraint(model,cursusGroups,cursusDict,options)
-TFEconstraints.teachersUnavailabilityConstraint(model,teachersDict,options)
+TFEconstraints.cursusUnavailabilityConstraint(model, cursusGroups, cursusDict, constants)
+TFEconstraints.teachersUnavailabilityConstraint(model, teachersDict, constants)
 
-TFEconstraints.startAndEndConstraint(model,lecturesDict,options)
-TFEconstraints.startAndEndConstraint(model,exercisesDict,options)
-TFEconstraints.startAndEndConstraint(model,tpsDict,options)
-TFEconstraints.startAndEndConstraint(model,projectsDict,options)
+TFEconstraints.startAndEndConstraint(model, lecturesDict, constants)
+TFEconstraints.startAndEndConstraint(model, exercisesDict, constants)
+TFEconstraints.startAndEndConstraint(model, tpsDict, constants)
+TFEconstraints.startAndEndConstraint(model, projectsDict, constants)
 
-TFEconstraints.regularityConstraint(model,lecturesDict,options)
-TFEconstraints.regularityConstraint(model,exercisesDict,options)
-TFEconstraints.regularityConstraint(model,tpsDict,options)
-TFEconstraints.regularityConstraint(model,projectsDict,options)
-TFEconstraints.breakSymmetryBetweenSpreads(model,lecturesDict,options)
-TFEconstraints.breakSymmetryBetweenSpreads(model,exercisesDict,options)
-TFEconstraints.breakSymmetryBetweenSpreads(model,tpsDict,options)
-TFEconstraints.breakSymmetryBetweenSpreads(model,projectsDict,options)
+TFEconstraints.regularityConstraint(model, lecturesDict, constants)
+TFEconstraints.regularityConstraint(model, exercisesDict, constants)
+TFEconstraints.regularityConstraint(model, tpsDict, constants)
+TFEconstraints.regularityConstraint(model, projectsDict, constants)
+TFEconstraints.breakSymmetryBetweenSpreads(model, lecturesDict, constants)
+TFEconstraints.breakSymmetryBetweenSpreads(model, exercisesDict, constants)
+TFEconstraints.breakSymmetryBetweenSpreads(model, tpsDict, constants)
+TFEconstraints.breakSymmetryBetweenSpreads(model, projectsDict, constants)
 
 print(time.time()-begin)
 
@@ -62,18 +69,18 @@ model.write_information()
 solution = model.solve()
 
 if solution:
-    print("Sauvegarde/affichage des solutions : ...")
+    print("Saving/displaying solutions : ...")
     begin = time.time()
 
     # solution.write()
     pass
-    # TFEtimetable.generateAndSaveTimetables(solution,cursusDict,teachersDict,roomsDict,options,colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution,teachersDict,cursusDict,roomsDict,options,colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, options, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_A", options,colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_B", options,colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, roomsDict, teachersDict, cursusDict, "Ho.12", options, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, teachersDict, cursusDict, roomsDict, "Vandaele A", options,colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, cursusDict, teachersDict, roomsDict, constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, teachersDict, cursusDict, roomsDict, constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_A", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_B", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, roomsDict, teachersDict, cursusDict, "Ho.12", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, teachersDict, cursusDict, roomsDict, "Vandaele A", constants, colors.COLORS)
 
     print(time.time() - begin)
 else:
