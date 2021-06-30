@@ -60,9 +60,9 @@ TFEconstraints.lecturesBeforeConstraint(model, lecturesDict, [exercisesDict,tpsD
 
 objectiveFunctions = []
 coefficients = []
-objectiveFunctions.append(TFEobjectives.avoidAfternoonSize1([lecturesDict], [], constants))
+objectiveFunctions.append(TFEobjectives.avoidAfternoonForShortIntervalVariables([lecturesDict], [], constants))
 coefficients.append(4)
-objectiveFunctions.append(TFEobjectives.avoidLastSlotSize1([exercisesDict], ["V-LANG-151","V-LANG-153","V-LANG-155"], constants))
+objectiveFunctions.append(TFEobjectives.avoidLastSlotForShortIntervalVariables([exercisesDict], ["V-LANG-151", "V-LANG-153", "V-LANG-155"], constants))
 coefficients.append(1)
 model.minimize(cp.scal_prod(objectiveFunctions,coefficients))
 

@@ -3,77 +3,78 @@ import math
 import matplotlib.pyplot as plt
 import random
 
-def generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, constants, colors):
-    generateColors = False
-    if colors is None:
-        colors = {}
-    typeLessons = {"lec": "Cours","ex": "Exercices","tp": "TP","pr": "Projet"}
+def generateTimetables(solution, majorData, minorData1, minorData2, constants, colorsDict):
+    hasGeneratedColors = False
+    if colorsDict is None:
+        colorsDict = {}
+
+    fullNameOfLessons = {"lec": "Cours","ex": "Exercices","tp": "TP","pr": "Projet"}
     timetables = {}
-    for majorItem,majorIntevals in majorSlots.items():
+    for majorID,majorIntervalVariables in majorData.items():
         timetable = np.full((constants["slots"], int(constants["days"] * constants["weeks"] / constants["segmentSize"])), "", dtype=object)
-        for majorInteval in majorIntevals:
-            variableName = majorInteval.get_name()
-            value = solution[variableName]
-            caracteristics = variableName.split("_")
+        for majorIntervalVariable in majorIntervalVariables:
+            variableName = majorIntervalVariable.get_name()
+            valuesOfInterval = solution[variableName]
+            caracteristicsOfVariable = variableName.split("_")
 
             if "ch" in variableName:
-                displayName = "Charleroi/" + str(int(caracteristics[2])+1) + "\n" + caracteristics[0] + "\n"
+                displayName = "Charleroi/" + str(int(caracteristicsOfVariable[2])+1) + "\n" + caracteristicsOfVariable[0] + "\n"
             else:
-                displayName = caracteristics[0] + "\n" + typeLessons[caracteristics[1]] + "/" + str(int(caracteristics[2])+1) + "\n"
+                displayName = caracteristicsOfVariable[0] + "\n" + fullNameOfLessons[caracteristicsOfVariable[1]] + "/" + str(int(caracteristicsOfVariable[2])+1) + "\n"
             breakFlag = False
-            found1 = False
-            for minorItem1,minorIntervals1 in minorSlots1.items():
+            found = False
+            for minorID1,minorIntervalVariables1 in minorData1.items():
                 if breakFlag:
                     break
-                for minorInterval1 in minorIntervals1:
-                    if variableName == minorInterval1.get_name():
-                        if found1:
+                for minorIntervalVariable1 in minorIntervalVariables1:
+                    if variableName == minorIntervalVariable1.get_name():
+                        if found:
                             displayName += ", ..."
                             breakFlag = True
                             break
-                        displayName += minorItem1
-                        found1 = True
+                        displayName += minorID1
+                        found = True
                         break
-
             displayName += "\n"
             breakFlag = False
-            found2 = False
-            for minorItem2,minorIntervals2 in minorSlots2.items():
+            found = False
+            for minorID2,minorIntervalVariables2 in minorData2.items():
                 if breakFlag:
                     break
-                for minorInterval2 in minorIntervals2:
-                    if variableName == minorInterval2.get_name():
-                        if found2:
+                for minorIntervalVariable2 in minorIntervalVariables2:
+                    if variableName == minorIntervalVariable2.get_name():
+                        if found:
                             displayName += ", ..."
                             breakFlag = True
                             break
-                        displayName += minorItem2
-                        found2 = True
+                        displayName += minorID2
+                        found = True
                         break
-
             if "ch2" in variableName:
                 displayName += "2"
             elif "ch4" in variableName:
                 displayName += "4"
-            base = math.trunc(value[0] / constants["slots"])
-            rest = value[0] % constants["slots"]
+
+            #TODO reprendre ici
+            base = math.trunc(valuesOfInterval[0] / constants["slots"])
+            rest = valuesOfInterval[0] % constants["slots"]
             timetable[rest][base] = displayName
 
-            if "Charleroi" not in displayName and caracteristics[0] not in colors:
-                generateColors = True
+            if "Charleroi" not in displayName and caracteristicsOfVariable[0] not in colorsDict:
+                hasGeneratedColors = True
                 while True:
                     color = (random.randint(1,254)/255,random.randint(1,254)/255,random.randint(1,254)/255,1)
-                    if color not in colors.values():
-                        colors[caracteristics[0]] = color
+                    if color not in colorsDict.values():
+                        colorsDict[caracteristicsOfVariable[0]] = color
                         break
 
 
-        timetables[majorItem] = timetable
-    if generateColors:
-        print(colors)
-    return timetables,colors
+        timetables[majorID] = timetable
+    if hasGeneratedColors:
+        print(colorsDict)
+    return timetables, colorsDict
 
-def saveTimetables(timetables, colors, constants):
+def saveTimetables(timetables, colorsDict, constants):
     for item,timetable in timetables.items():
         m,n = timetable.shape
         k = 1
@@ -117,7 +118,7 @@ def saveTimetables(timetables, colors, constants):
                         ax.text(day + 0.5, center, timetables[item][i][j][:-1], fontsize=6, horizontalalignment='center',
                                 verticalalignment='center', color=colorText)
                     else:
-                        color = colors[timetables[item][i][j].split("\n")[0]]
+                        color = colorsDict[timetables[item][i][j].split("\n")[0]]
                         colorText = 'black' if (color[0] * 255 * 0.299 + color[1] * 255 * 0.587 + color[
                             2] * 255 * 0.114) > 150 else 'white'
                         center = 0
@@ -151,15 +152,15 @@ def saveTimetables(timetables, colors, constants):
                 fig.savefig("results/" + constants["folderResults"] + "/" + nameFile + ".jpg")
                 plt.close(fig)
 
-def displayTimetable(timetables, colors, item, constants):
-    if item in timetables:
-        m,n = timetables[item].shape
+def displayTimetable(timetables, colorsDict, ID, constants):
+    if ID in timetables:
+        m,n = timetables[ID].shape
         k = 1
         for j in range(n):
             day = j % constants["days"]
             if day == 0:
                 fig, ax = plt.subplots()
-                title = item + " : Segment " + str(k)
+                title = ID + " : Segment " + str(k)
                 ax.set_title(title)
                 ax.set_xticks(np.linspace(0,5,6))
                 ax.set_yticks([0,1,1.125,2.125,2.625,3.625,3.750,4.750])
@@ -173,11 +174,11 @@ def displayTimetable(timetables, colors, item, constants):
                 ax.set_axisbelow(True)
                 k += 1
             for i in range(m):
-                if timetables[item][i][j] != "":
-                    if "Charleroi" in timetables[item][i][j]:
+                if timetables[ID][i][j] != "":
+                    if "Charleroi" in timetables[ID][i][j]:
                         color = (0,0,0,1)
                         colorText = 'white'
-                        if timetables[item][i][j][-1] == "2":
+                        if timetables[ID][i][j][-1] == "2":
                             if i == 0:
                                 center = 3.625
                                 ax.fill_between([day, day + 1], 2.625, 4.625, color=color)
@@ -186,19 +187,19 @@ def displayTimetable(timetables, colors, item, constants):
                                 ax.fill_between([day, day + 1], 0.125, 2.125, color=color)
                             else:
                                 continue
-                        elif timetables[item][i][j][-1] == "4":
+                        elif timetables[ID][i][j][-1] == "4":
                             ax.fill_between([day, day + 1], 0, 4.75, color=color)
                             center = 2.375
                         else:
                             continue
-                        ax.text(day + 0.5, center, timetables[item][i][j][:-1], fontsize=6, horizontalalignment='center',
+                        ax.text(day + 0.5, center, timetables[ID][i][j][:-1], fontsize=6, horizontalalignment='center',
                                 verticalalignment='center', color=colorText)
                     else:
-                        color = colors[timetables[item][i][j].split("\n")[0]]
+                        color = colorsDict[timetables[ID][i][j].split("\n")[0]]
                         colorText = 'black' if (color[0] * 255 * 0.299 + color[1] * 255 * 0.587 + color[
                             2] * 255 * 0.114) > 150 else 'white'
                         center = 0
-                        if "TP/" in timetables[item][i][j] or "Projet/" in timetables[item][i][j]:
+                        if "TP/" in timetables[ID][i][j] or "Projet/" in timetables[ID][i][j]:
                             if i == 0:
                                 ax.fill_between([day, day + 1], 2.625, 4.625, color=color)
                                 center = 3.625
@@ -207,8 +208,8 @@ def displayTimetable(timetables, colors, item, constants):
                                 center = 1.125
                             else:
                                 continue
-                            ax.text(day + 0.5, center, timetables[item][i][j], fontsize=6, horizontalalignment='center',
-                                    verticalalignment='center',color=colorText)
+                            ax.text(day + 0.5, center, timetables[ID][i][j], fontsize=6, horizontalalignment='center',
+                                    verticalalignment='center', color=colorText)
                         else:
                             if i == 0:
                                 ax.fill_between([day, day + 1], 3.750, 4.750, color=color)
@@ -222,15 +223,15 @@ def displayTimetable(timetables, colors, item, constants):
                             elif i == 3:
                                 ax.fill_between([day, day + 1], 0, 1, color=color)
                                 center = 0.5
-                            ax.text(day + 0.5, center, timetables[item][i][j], fontsize=6, horizontalalignment='center',
-                                    verticalalignment='center',color=colorText)
+                            ax.text(day + 0.5, center, timetables[ID][i][j], fontsize=6, horizontalalignment='center',
+                                    verticalalignment='center', color=colorText)
             if day == 4:
                 plt.show()
 
-def generateAndSaveTimetables(solution, majorSlots, minorSlots1, minorSlots2, constants, colors):
-    timetables,colors = generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, constants, colors)
-    saveTimetables(timetables, colors, constants)
+def generateAndSaveTimetables(solution, majorData, minorData1, minorData2, constants, colorsDict):
+    timetables, colorsDict = generateTimetables(solution, majorData, minorData1, minorData2, constants, colorsDict)
+    saveTimetables(timetables, colorsDict, constants)
 
-def generateAndDisplayTimetable(solution, majorSlots, minorSlots1, minorSlots2, item, constants, colors):
-    timetables,colors = generateTimetables(solution, majorSlots, minorSlots1, minorSlots2, constants, colors)
-    displayTimetable(timetables, colors, item, constants)
+def generateAndDisplayTimetable(solution, majorData, minorData1, minorData2, ID, constants, colorsDict):
+    timetables, colorsDict = generateTimetables(solution, majorData, minorData1, minorData2, constants, colorsDict)
+    displayTimetable(timetables, colorsDict, ID, constants)
