@@ -6,7 +6,7 @@ import variables as TFEvariables
 import docplex.cp.model as cp
 import itertools
 
-# les séances de TP et projet ne peuvent pas commencer à des périodes impaires (durée 3h ou 4h)
+
 def firstOrThirdSlotConstraint(model, slots, constants):
     firstOrThirdSlotOnlyFunction = cp.CpoStepFunction(steps=[(i,1 if i%2 == 0 else 0) for i in range(int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]))])
     for AAdata in slots.values():
@@ -55,11 +55,11 @@ def cursusUnavailabilityConstraint(model, cursusGroups, cursusSlots, constants):
     unavailabilityFunctions = {}
 
     for row in data.itertuples():
-        listCursus = cursusGroups.getGroups([row.Cursus])
-        startValue = math.trunc((row.Week_start - 1) / constants["segmentSize"]) * 20 + (row.Day_start - 1) * constants[
-            "slots"] + (row.Slot_start - 1)
-        endValue = math.trunc((row.Week_end - 1) / constants["segmentSize"]) * 20 + (row.Day_end - 1) * constants[
-            "slots"] + row.Slot_end
+        listCursus = cursusGroups.getGroups([row.cursus])
+        startValue = math.trunc((row.weekStart - 1) / constants["segmentSize"]) * 20 + (row.dayStart - 1) * constants[
+            "slots"] + (row.slotStart - 1)
+        endValue = math.trunc((row.weekEnd - 1) / constants["segmentSize"]) * 20 + (row.dayEnd - 1) * constants[
+            "slots"] + row.slotEnd
         for c in listCursus:
             if c not in unavailabilityFunctions:
                 unavailabilityFunctions[c] = cp.CpoStepFunction()
@@ -76,14 +76,14 @@ def teachersUnavailabilityConstraint(model, teacherSlots, constants):
     unavailabilityFunctions = {}
 
     for row in data.itertuples():
-        startValue = math.trunc((row.Week_start - 1) / constants["segmentSize"]) * 20 + (row.Day_start - 1) * constants[
-            "slots"] + (row.Slot_start - 1)
-        endValue = math.trunc((row.Week_end - 1) / constants["segmentSize"]) * 20 + (row.Day_end - 1) * constants[
-            "slots"] + row.Slot_end
-        if row.Teacher not in unavailabilityFunctions:
-            unavailabilityFunctions[row.Teacher] = cp.CpoStepFunction()
-            unavailabilityFunctions[row.Teacher].set_value(0, int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]), 100)
-        unavailabilityFunctions[row.Teacher].set_value(startValue, endValue, 0)
+        startValue = math.trunc((row.weekStart - 1) / constants["segmentSize"]) * 20 + (row.dayStart - 1) * constants[
+            "slots"] + (row.slotStart - 1)
+        endValue = math.trunc((row.weekEnd - 1) / constants["segmentSize"]) * 20 + (row.dayEnd - 1) * constants[
+            "slots"] + row.slotEnd
+        if row.teacher not in unavailabilityFunctions:
+            unavailabilityFunctions[row.teacher] = cp.CpoStepFunction()
+            unavailabilityFunctions[row.teacher].set_value(0, int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]), 100)
+        unavailabilityFunctions[row.teacher].set_value(startValue, endValue, 0)
 
     for teacher, unavailabilityFunction in unavailabilityFunctions.items():
         if teacher in teacherSlots:
@@ -96,10 +96,10 @@ def daysOffUnavailabilityConstraint(model, slots, constants):
     unavailabilityFunction.set_value(0, int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]), 100)
 
     for row in data.itertuples():
-        startValue = math.trunc((row.Week_start - 1) / constants["segmentSize"]) * 20 + (row.Day_start - 1) * constants[
-            "slots"] + (row.Slot_start - 1)
-        endValue = math.trunc((row.Week_end - 1) / constants["segmentSize"]) * 20 + (row.Day_end - 1) * constants[
-            "slots"] + row.Slot_end
+        startValue = math.trunc((row.weekStart - 1) / constants["segmentSize"]) * 20 + (row.dayStart - 1) * constants[
+            "slots"] + (row.slotStart - 1)
+        endValue = math.trunc((row.weekEnd - 1) / constants["segmentSize"]) * 20 + (row.dayEnd - 1) * constants[
+            "slots"] + row.slotEnd
         unavailabilityFunction.set_value(startValue, endValue, 0)
 
     for AAdata in slots.values():

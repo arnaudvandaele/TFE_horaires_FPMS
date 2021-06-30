@@ -36,16 +36,18 @@ constants = {
     "groupAuto": False
 }
 
-lecturesDict,exercisesDict,tpsDict,projectsDict,cursusDict,teachersDict,roomsDict,cursusGroups,AAset = TFEvariables.instantiateVariables(constants)
+lecturesDict, exercisesDict, tpsDict, projectsDict, \
+cursusVariables, teachersVariables, roomsVariables, \
+cursusGroups, AAset = TFEvariables.generateVariables(constants)
 
-TFEconstraints.cursusUnavailabilityConstraint(model, cursusGroups, cursusDict, constants)
-TFEvariables.charleroiFixedVariables(model, teachersDict, roomsDict, constants)
+TFEconstraints.cursusUnavailabilityConstraint(model, cursusGroups, cursusVariables, constants)
+TFEvariables.charleroiFixedVariables(model, teachersVariables, roomsVariables, constants)
 
 TFEconstraints.firstOrThirdSlotConstraint(model, tpsDict, constants)
 TFEconstraints.firstOrThirdSlotConstraint(model, projectsDict, constants)
-TFEconstraints.notOverlappingConstraint(model,cursusDict)
-TFEconstraints.notOverlappingConstraint(model,teachersDict)
-TFEconstraints.notOverlappingConstraint(model,roomsDict)
+TFEconstraints.notOverlappingConstraint(model, cursusVariables)
+TFEconstraints.notOverlappingConstraint(model, teachersVariables)
+TFEconstraints.notOverlappingConstraint(model, roomsVariables)
 TFEconstraints.sameWeekDuplicatesConstraint(model, exercisesDict, constants)
 TFEconstraints.sameWeekDuplicatesConstraint(model, tpsDict, constants)
 
@@ -64,7 +66,7 @@ objectiveFunctions.append(TFEobjectives.avoidLastSlotSize1([exercisesDict], ["V-
 coefficients.append(1)
 model.minimize(cp.scal_prod(objectiveFunctions,coefficients))
 
-model.add_solver_callback(TFEcallbacks.CallbackSolutionPrintingStatus())
+model.add_solver_callback(TFEcallbacks.PersonalCallback())
 
 print(time.time()-begin)
 
@@ -77,14 +79,13 @@ if solution:
 
     # solution.write()
     pass
-    # TFEtimetable.generateAndSaveTimetables(solution, cursusDict, teachersDict, roomsDict, constants, colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution, teachersDict, cursusDict, roomsDict, constants, colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution, roomsDict, teachersDict, cursusDict, constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_A", constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_C", constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusDict, teachersDict, roomsDict, "BA1_E", constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, roomsDict, teachersDict, cursusDict, "Ch.1", constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, teachersDict, cursusDict, roomsDict, "Vandaele A", constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, cursusVariables, teachersVariables, roomsVariables, constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, teachersVariables, cursusVariables, roomsVariables, constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, roomsVariables, teachersVariables, cursusVariables, constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusVariables, teachersVariables, roomsVariables, "BA1_A", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, cursusVariables, teachersVariables, roomsVariables, "BA1_B", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, roomsVariables, teachersVariables, cursusVariables, "Ho.12", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, teachersVariables, cursusVariables, roomsVariables, "Vandaele A", constants, colors.COLORS)
 
     print(time.time()-begin)
 else:
