@@ -5,7 +5,7 @@ class CursusGroups:
 
     def __init__(self, fileDataset):
         self.cursusData = TFEdata.loadCursusData(fileDataset)
-        self.knownGroups = {
+        self.knownDivisions = {
             ("BA1_A", "BA1_B", "BA1_C", "BA1_D", "BA1_E", "BA1_F", "BA1_G", "BA1_H", 8): {
                 "BA1_A": 0,
                 "BA1_B": 1,
@@ -106,12 +106,12 @@ class CursusGroups:
 
         return cursusGroups
 
-    def generateBalancedGroups(self, cursusList, numberDivisions, groupAuto):
+    def generateBalancedDivisions(self, cursusList, numberDivisions, groupAuto):
         cursusGroups = self.getGroupsWithCapacity(cursusList)
         cursusGroupsCheck = self.getGroups(cursusList)
         cursusGroupsCheck.append(numberDivisions)
-        if groupAuto is False and tuple(cursusGroupsCheck) in self.knownGroups:
-            return self.knownGroups[tuple(cursusGroupsCheck)]
+        if groupAuto is False and tuple(cursusGroupsCheck) in self.knownDivisions:
+            return self.knownDivisions[tuple(cursusGroupsCheck)]
 
         if numberDivisions != 1:
             threshold = 0

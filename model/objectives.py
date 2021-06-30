@@ -14,7 +14,7 @@ def avoidAfternoonSize1(arraySlots, blacklist, constants):
             afternoonPenalty.set_value(i,i+1,1)
     objectiveValue = cp.sum(
         [cp.start_eval(interval, afternoonPenalty) for slots in arraySlots for AA,AAdata in slots.items() for group in
-         AAdata["groups"] for interval in group if AA not in blacklist])
+         AAdata["divisions"] for interval in group if AA not in blacklist])
     return objectiveValue
 
 def avoidAfternoonSize2(arraySlots, blacklist, constants):
@@ -28,7 +28,7 @@ def avoidAfternoonSize2(arraySlots, blacklist, constants):
 
     objectiveValue = cp.sum(
         [cp.end_eval(interval, afternoonPenalty) for slots in arraySlots for AA,AAdata in slots.items() for group in
-         AAdata["groups"] for interval in group if AA not in blacklist])
+         AAdata["divisions"] for interval in group if AA not in blacklist])
     return objectiveValue
 
 def avoidLastSlotSize1(arraySlots, blacklist, constants):
@@ -41,7 +41,7 @@ def avoidLastSlotSize1(arraySlots, blacklist, constants):
 
     objectiveValue = cp.sum(
         [cp.start_eval(interval, lastSlotPenalty) for slots in arraySlots for AA,AAdata in slots.items() for group in
-         AAdata["groups"] for interval in group if AA not in blacklist])
+         AAdata["divisions"] for interval in group if AA not in blacklist])
     return objectiveValue
 
 def spreadSlots(lecturesDict,exercisesDict,tpsDict,projectsDict,AAset):

@@ -10,7 +10,7 @@ import itertools
 def firstOrThirdSlotConstraint(model, slots, constants):
     firstOrThirdSlotOnlyFunction = cp.CpoStepFunction(steps=[(i,1 if i%2 == 0 else 0) for i in range(int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]))])
     for AAdata in slots.values():
-        for group in AAdata["groups"]:
+        for group in AAdata["divisions"]:
             for interval in group:
                 model.add(cp.forbid_start(interval=interval,function=firstOrThirdSlotOnlyFunction))
 
@@ -19,7 +19,7 @@ def morningSlotConstraint(model, slots, constants, allowed=None):
     for AAdata in slots.values():
         if allowed is not None and not any(cursus in AAdata["cursus"] for cursus in allowed):
             continue
-        for group in AAdata["groups"]:
+        for group in AAdata["divisions"]:
             for interval in group:
                 model.add(cp.forbid_start(interval=interval,function=morningOnlyFunction))
 
@@ -30,22 +30,22 @@ def notOverlappingConstraint(model,slots):
 
 def sameWeekDuplicatesConstraint(model, slots, constants):
     for AA,AAdata in slots.items():
-        numberGroups = len(AAdata["groups"])
-        numberLessons = len(AAdata["groups"][0])
+        numberGroups = len(AAdata["divisions"])
+        numberLessons = len(AAdata["divisions"][0])
         if numberGroups != 1:
             for j in range(numberLessons):
-                duplicateSlots = [AAdata["groups"][i][j] for i in range(numberGroups)]
+                duplicateSlots = [AAdata["divisions"][i][j] for i in range(numberGroups)]
                 for interval1,interval2 in itertools.combinations(duplicateSlots,2):
                     model.add(cp.trunc(cp.start_of(interval1) / (constants["days"] * constants["slots"])) ==
                               cp.trunc(cp.start_of(interval2) / (constants["days"] * constants["slots"])))
 
 def gapBetweenDuplicatesConstraint(model, slots, constants):
     for AA,AAdata in slots.items():
-        numberGroups = len(AAdata["groups"])
-        numberLessons = len(AAdata["groups"][0])
+        numberGroups = len(AAdata["divisions"])
+        numberLessons = len(AAdata["divisions"][0])
         if numberGroups != 1:
             for j in range(numberLessons):
-                duplicateSlots = [AAdata["groups"][i][j] for i in range(numberGroups)]
+                duplicateSlots = [AAdata["divisions"][i][j] for i in range(numberGroups)]
                 for interval1,interval2 in itertools.combinations(duplicateSlots,2):
                     model.add(constants["gap"] >= cp.max(cp.start_of(interval1) - cp.end_of(interval2),
                                                          cp.start_of(interval2) - cp.end_of(interval1)))
@@ -103,21 +103,21 @@ def daysOffUnavailabilityConstraint(model, slots, constants):
         unavailabilityFunction.set_value(startValue, endValue, 0)
 
     for AAdata in slots.values():
-        for group in AAdata["groups"]:
+        for group in AAdata["divisions"]:
             for interval in group:
                 model.add(cp.forbid_extent(interval,unavailabilityFunction))
 
 # chaque séance est numérotée et chronologique (briser la symétrie)
 def orderingSlotsConstraint(model,slots):
     for AAdata in slots.values():
-        for group in AAdata["groups"]:
+        for group in AAdata["divisions"]:
             for i in range(len(group)-1):
                 model.add(cp.end_before_start(group[i],group[i+1]))
 
 def startAndEndConstraint(model, slots, constants):
     for AAdata in slots.values():
-        for group in AAdata["groups"]:
-            modelStartEnd = (math.floor((AAdata["spread"][0]-1) / constants["segmentSize"]), math.ceil(AAdata["spread"][1] / constants["segmentSize"]))
+        for group in AAdata["divisions"]:
+            modelStartEnd = (math.floor((AAdata["weekBounds"][0]-1) / constants["segmentSize"]), math.ceil(AAdata["weekBounds"][1] / constants["segmentSize"]))
             if modelStartEnd[0] != 0:
                 for interval in group:
                     model.add(cp.start_of(interval) >= modelStartEnd[0] * 20)
@@ -129,8 +129,8 @@ def startAndEndConstraint(model, slots, constants):
 def spreadConstraint(model, slots, constants):
     numberWeeksModel = int(constants["weeks"] / constants["segmentSize"])
     for AAdata in slots.values():
-        for group in AAdata["groups"]:
-            modelStartEnd = (math.floor((AAdata["spread"][0] - 1) / constants["segmentSize"]), math.ceil(AAdata["spread"][1] / constants["segmentSize"]))
+        for group in AAdata["divisions"]:
+            modelStartEnd = (math.floor((AAdata["weekBounds"][0] - 1) / constants["segmentSize"]), math.ceil(AAdata["weekBounds"][1] / constants["segmentSize"]))
             spreadTime = modelStartEnd[1]-modelStartEnd[0]
             numberFullBlocs = math.trunc(len(group)/spreadTime)
             trailingBloc = int(len(group)%spreadTime)
@@ -166,16 +166,16 @@ def spreadConstraint(model, slots, constants):
 
 def regularityConstraint(model, slots, constants):
     for AAdata in slots.values():
-        for group in AAdata["groups"]:
-            spreads = TFEvariables.generateSpreads(group, constants["regularitySize"])
+        for group in AAdata["divisions"]:
+            spreads = TFEvariables.splitVariablesInBlocs(group, constants["regularitySize"])
             for spread in spreads:
                 for i in range(len(spread)-1):
                     model.add(cp.start_at_start(spread[i], spread[i + 1], delay=20))
 
 def breakSymmetryBetweenSpreads(model, slots, constants):
     for AAdata in slots.values():
-        for group in AAdata["groups"]:
-            spreads = TFEvariables.generateSpreads(group, constants["regularitySize"])
+        for group in AAdata["divisions"]:
+            spreads = TFEvariables.splitVariablesInBlocs(group, constants["regularitySize"])
             fullSpreads = [spread for spread in spreads if len(spread) == constants["regularitySize"]]
             for i in range(len(fullSpreads)-1):
                 for j in range(len(fullSpreads[0])):
@@ -185,18 +185,18 @@ def lecturesBeforeConstraint(model, lectureSlots, afterSlots, AAset, constants):
     for AA in AAset:
         if AA in lectureSlots:
             modelStartEndLecture = (
-                math.floor((lectureSlots[AA]["spread"][0] - 1) / constants["segmentSize"]),
-                math.ceil(lectureSlots[AA]["spread"][1] / constants["segmentSize"])
+                math.floor((lectureSlots[AA]["weekBounds"][0] - 1) / constants["segmentSize"]),
+                math.ceil(lectureSlots[AA]["weekBounds"][1] / constants["segmentSize"])
             )
             spreadTimeLecture = modelStartEndLecture[1] - modelStartEndLecture[0]
-            for groupLecture in lectureSlots[AA]["groups"]:
+            for groupLecture in lectureSlots[AA]["divisions"]:
                 numberFullBlocsLecture = math.trunc(len(groupLecture) / spreadTimeLecture)
                 trailingBlocLecture = int(len(groupLecture) % spreadTimeLecture)
                 for slots in afterSlots:
                     if AA in slots:
                         modelStartEndSlots = (
-                            math.floor((slots[AA]["spread"][0] - 1) / constants["segmentSize"]),
-                            math.ceil(slots[AA]["spread"][1] / constants["segmentSize"])
+                            math.floor((slots[AA]["weekBounds"][0] - 1) / constants["segmentSize"]),
+                            math.ceil(slots[AA]["weekBounds"][1] / constants["segmentSize"])
                         )
                         spreadTimeSlots = modelStartEndSlots[1] - modelStartEndSlots[0]
                         if (modelStartEndLecture[0] >= modelStartEndSlots[1] or modelStartEndSlots[0] >= modelStartEndLecture[1]):
@@ -206,7 +206,7 @@ def lecturesBeforeConstraint(model, lectureSlots, afterSlots, AAset, constants):
                                 max(modelStartEndLecture[0],modelStartEndSlots[0]),
                                 min(modelStartEndLecture[1],modelStartEndSlots[1])
                             )
-                            for groupSlots in slots[AA]["groups"]:
+                            for groupSlots in slots[AA]["divisions"]:
                                 numberFullBlocsSlots = math.trunc(len(groupSlots) / spreadTimeSlots)
                                 trailingBlocSlots = int(len(groupSlots) % spreadTimeSlots)
 
