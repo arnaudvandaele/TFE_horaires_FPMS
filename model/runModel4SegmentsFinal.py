@@ -59,8 +59,8 @@ TFEconstraints.spreadConstraint(model, projectsDict, constants)
 TFEconstraints.lecturesBeforeConstraint(model, lecturesDict, [exercisesDict,tpsDict], AAset, constants)
 
 TFEinitialization.simultaneousGroups(model,exercisesDict["I-PHYS-020"],exercisesDict["I-SDMA-020"])
-TFEinitialization.fixedSlots(model, projectsDict["I-POLY-011"], (5,3), constants)
-TFEinitialization.fixedSlots(model, projectsDict["I-ILIA-024"], (5,3), constants)
+TFEinitialization.fixedSlots(model, projectsDict["I-POLY-011"], 5, 3, constants)
+TFEinitialization.fixedSlots(model, projectsDict["I-ILIA-024"], 5, 3, constants)
 
 objectiveFunctions = []
 coefficients = []

@@ -1,26 +1,23 @@
 import math
-
-import data.io as TFEdata
-import variables as TFEvariables
-
 import docplex.cp.model as cp
-import itertools
 
-def simultaneousGroups(model,slots1,slots2):
-    numberGroups1 = len(slots1["divisions"])
-    numberGroups2 = len(slots2["divisions"])
-    if slots1["weekBounds"] == slots2["weekBounds"] and numberGroups1 == numberGroups2 and set(
-            slots1["cursus"]) == set(slots2["cursus"]) and numberGroups1%2 == 0:
-        for i in range(numberGroups1):
-            for j in range(len(slots1["divisions"][0])):
-                model.add(cp.start_at_start(slots1["divisions"][i][j],slots2["divisions"][numberGroups2-1-i][j]))
+def simultaneousGroups(model, AAdict1, AAdict2):
+    numberOfDivisions1 = len(AAdict1["divisions"])
+    numberOfDivisions2 = len(AAdict2["divisions"])
+    if AAdict1["weekBounds"] == AAdict2["weekBounds"] and numberOfDivisions1 == numberOfDivisions2 and set(
+            AAdict1["cursus"]) == set(AAdict2["cursus"]) and numberOfDivisions1%2 == 0:
+        for d in range(numberOfDivisions1):
+            for v in range(len(AAdict1["divisions"][0])):
+                model.add(cp.start_at_start(AAdict1["divisions"][d][v], AAdict2["divisions"][numberOfDivisions2 - 1 - d][v]))
     else:
-        print("ko")
+        print("The 2 AAs don't match (number of divisions or week bounds or cursus).")
 
-def fixedSlots(model, slots, timing, constants):
-    numberSlots = len(slots["divisions"][0])
-    startWeek = math.floor((slots["weekBounds"][0]-1) / constants["segmentSize"])
-    endWeek = math.ceil(slots["weekBounds"][1] / constants["segmentSize"])
-    if endWeek - startWeek == numberSlots and 1 <= timing[0] <= constants["days"] and 1 <= timing[1] <= constants["slots"]:
-        for i,slot in enumerate(slots["divisions"][0]):
-            model.add(cp.start_of(slot) == i * constants["days"] * constants["slots"] + (timing[0] - 1) * constants["slots"] + timing[1] - 1)
+def fixedSlots(model, AAdict, fixedDay, fixedSlot, constants):
+    numberOfIntervalVariables = len(AAdict["divisions"][0])
+    startWeek = math.floor((AAdict["weekBounds"][0] - 1) / constants["segmentSize"])
+    endWeek = math.ceil(AAdict["weekBounds"][1] / constants["segmentSize"])
+    if endWeek - startWeek == numberOfIntervalVariables and 1 <= fixedDay <= constants["days"] and 1 <= fixedSlot <= constants["slots"]:
+        for index,intervalVariable in enumerate(AAdict["divisions"][0]):
+            model.add(cp.start_of(intervalVariable) == index * constants["days"] * constants["slots"] + (fixedDay - 1) * constants["slots"] + fixedSlot - 1)
+    else:
+        print("The AA doesn't match (incorrect number of interval variables or incorrect day/slot).")

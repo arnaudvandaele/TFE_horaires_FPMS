@@ -90,48 +90,42 @@ class CursusGroups:
             }
         }
 
-    def getGroups(self,cursusList):
-        cursusGroups = []
-        for c in cursusList:
-            for k in self.cursusData[c].keys():
-                cursusGroups.append(k)
+    def getGroups(self, listOfCursus):
+        listOfGroups = []
+        for cursus in listOfCursus:
+            for group in self.cursusData[cursus].keys():
+                listOfGroups.append(group)
 
-        return cursusGroups
+        return listOfGroups
 
-    def getGroupsWithCapacity(self,cursusList):
-        cursusGroups = {}
-        for c in cursusList:
-            for k,v in self.cursusData[c].items():
-                cursusGroups[k] = v
+    def getGroupsWithCapacity(self, listOfCursus):
+        listOfGroupsWithCapacity = {}
+        for cursus in listOfCursus:
+            for group,numberOfStudents in self.cursusData[cursus].items():
+                listOfGroupsWithCapacity[group] = numberOfStudents
 
-        return cursusGroups
+        return listOfGroupsWithCapacity
 
-    def generateBalancedDivisions(self, cursusList, numberDivisions, groupAuto):
-        cursusGroups = self.getGroupsWithCapacity(cursusList)
-        cursusGroupsCheck = self.getGroups(cursusList)
-        cursusGroupsCheck.append(numberDivisions)
-        if groupAuto is False and tuple(cursusGroupsCheck) in self.knownDivisions:
-            return self.knownDivisions[tuple(cursusGroupsCheck)]
+    def generateBalancedDivisions(self, listOfCursus, numberDivisions, isGroupAuto):
+        listOfGroupsWithCapacity = self.getGroupsWithCapacity(listOfCursus)
+        cursusGroupsKey = self.getGroups(listOfCursus)
+        cursusGroupsKey.append(numberDivisions)
+        if isGroupAuto is False and tuple(cursusGroupsKey) in self.knownDivisions:
+            return self.knownDivisions[tuple(cursusGroupsKey)]
 
         if numberDivisions != 1:
-            threshold = 0
-            for v in cursusGroups.values():
-                threshold += v
-            threshold /= numberDivisions
+            expectedMean = 0
+            divisions = [0 for d in range(numberDivisions)]
+            for group,numberOfStudents in listOfGroupsWithCapacity.items():
+                expectedMean += numberOfStudents
+                groupVariable = cp.integer_var(min=0,max=numberDivisions-1,name=group)
+                for d in range(numberDivisions):
+                    divisions[d] += (groupVariable == d)*numberOfStudents
+            expectedMean /= numberDivisions
 
-            model = cp.CpoModel()
-            divisions = [0 for i in range(numberDivisions)]
-            for k,v in cursusGroups.items():
-                group = cp.integer_var(min=0,max=numberDivisions-1,name=k)
-                for i in range(numberDivisions):
-                    divisions[i] += (group == i)*v
-
-            model.add(cp.minimize(cp.sum(cp.abs(div-threshold) for div in divisions)))
-            solution = model.solve(LogVerbosity='Quiet')
-            balancedGroups = {s.get_name(): s.get_value() for s in solution.get_all_var_solutions()}
-            # print("!!!!!! Warning !!!!!!")
-            # print("Unknown groups have been encountered. Please register them and/or review the response")
-            # print(balancedGroups)
-            return balancedGroups
+            subModel = cp.CpoModel()
+            subModel.add(cp.minimize(cp.sum(cp.abs(div-expectedMean) for div in divisions)))
+            solution = subModel.solve(LogVerbosity='Quiet')
+            return {s.get_name(): s.get_value() for s in solution.get_all_var_solutions()}
         else:
-            return {k: 0 for k in cursusGroups.keys()}
+            return {k: 0 for k in listOfGroupsWithCapacity.keys()}
