@@ -9,7 +9,6 @@ context.params.LogVerbosity = 'Terse'
 # context.params.SearchType = "MultiPoint"
 # context.params.TemporalRelaxation = "Off"
 # context.params.DefaultInferenceLevel = 'Low'
-
 context.params.ConflictRefinerTimeLimit = 60
 
 context.verbose = 0
