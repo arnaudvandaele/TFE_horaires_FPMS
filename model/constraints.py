@@ -1,8 +1,6 @@
 import math
-
 import data.io as TFEdata
 import variables as TFEvariables
-
 import docplex.cp.model as cp
 import itertools
 

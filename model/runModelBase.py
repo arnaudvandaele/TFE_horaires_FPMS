@@ -2,7 +2,6 @@ import variables as TFEvariables
 import constraints as TFEconstraints
 import timetable as TFEtimetable
 import data.colors as colors
-
 import time
 import docplex.cp.model as cp
 

@@ -5,7 +5,6 @@ import objectives as TFEobjectives
 import callbacks as TFEcallbacks
 import initialization as TFEinitialization
 import data.colors as colors
-
 import time
 import docplex.cp.model as cp
 

@@ -4,7 +4,6 @@ import timetable as TFEtimetable
 import objectives as TFEobjectives
 import callbacks as TFEcallbacks
 import data.colors as colors
-
 import time
 import docplex.cp.model as cp
 

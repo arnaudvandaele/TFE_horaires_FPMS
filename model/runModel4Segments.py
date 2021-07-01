@@ -3,7 +3,6 @@ import constraints as TFEconstraints
 import timetable as TFEtimetable
 import callbacks as TFEcallbacks
 import data.colors as colors
-
 import time
 import docplex.cp.model as cp
 
