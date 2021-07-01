@@ -14,8 +14,8 @@ def avoidAfternoonForShortIntervalVariables(listOfLessonsDict, AAblacklist, cons
             afternoonPenalty.set_value(i,i+1,1)
 
     objectiveFunction = cp.sum(
-        [cp.start_eval(intervalVariable, afternoonPenalty) for lessonsDict in listOfLessonsDict for ID, AA in lessonsDict.items() for division in
-         AA["divisions"] for intervalVariable in division if ID not in AAblacklist])
+        [cp.start_eval(intervalVariable, afternoonPenalty) for lessonDict in listOfLessonsDict for ID, AA in lessonDict.items() for variablesOfDivision in
+         AA["divisions"] for intervalVariable in variablesOfDivision if ID not in AAblacklist])
     return objectiveFunction
 
 def avoidAfternoonForLongIntervalVariables(listOfLessonsDict, AAblacklist, constants):
@@ -28,8 +28,8 @@ def avoidAfternoonForLongIntervalVariables(listOfLessonsDict, AAblacklist, const
             afternoonPenalty.set_value(2 * i, 2 * (i + 1), 0)
 
     objectiveFunction = cp.sum(
-        [cp.end_eval(intervalVariable, afternoonPenalty) for lessonsDict in listOfLessonsDict for ID, AA in lessonsDict.items() for division in
-         AA["divisions"] for intervalVariable in division if ID not in AAblacklist])
+        [cp.end_eval(intervalVariable, afternoonPenalty) for lessonDict in listOfLessonsDict for ID, AA in lessonDict.items() for variablesOfDivision in
+         AA["divisions"] for intervalVariable in variablesOfDivision if ID not in AAblacklist])
     return objectiveFunction
 
 def avoidLastSlotForShortIntervalVariables(listOfLessonsDict, AAblacklist, constants):
@@ -40,8 +40,8 @@ def avoidLastSlotForShortIntervalVariables(listOfLessonsDict, AAblacklist, const
             lastSlotPenalty.set_value(i, i + 1, 1)
 
     objectiveFunction = cp.sum(
-        [cp.start_eval(intervalVariable, lastSlotPenalty) for lessonsDict in listOfLessonsDict for ID, AA in lessonsDict.items() for division in
-         AA["divisions"] for intervalVariable in division if ID not in AAblacklist])
+        [cp.start_eval(intervalVariable, lastSlotPenalty) for lessonDict in listOfLessonsDict for ID, AA in lessonDict.items() for variablesOfDivision in
+         AA["divisions"] for intervalVariable in variablesOfDivision if ID not in AAblacklist])
     return objectiveFunction
 
 def spreadIntervalVariables(lecturesDict, exercisesDict, tpsDict, projectsDict, AAset):

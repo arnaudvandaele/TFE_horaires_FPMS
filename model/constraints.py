@@ -6,281 +6,297 @@ import variables as TFEvariables
 import docplex.cp.model as cp
 import itertools
 
-
-def firstOrThirdSlotConstraint(model, slots, constants):
+def longIntervalVariablesIntegrity(model, lessonDict, constants):
     firstOrThirdSlotOnlyFunction = cp.CpoStepFunction(steps=[(i,1 if i%2 == 0 else 0) for i in range(int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]))])
-    for AAdata in slots.values():
-        for group in AAdata["divisions"]:
-            for interval in group:
-                model.add(cp.forbid_start(interval=interval,function=firstOrThirdSlotOnlyFunction))
+    for AA in lessonDict.values():
+        for variablesOfDivision in AA["divisions"]:
+            for intervalVariable in variablesOfDivision:
+                model.add(cp.forbid_start(interval=intervalVariable,function=firstOrThirdSlotOnlyFunction))
 
-def morningSlotConstraint(model, slots, constants, allowed=None):
+def morningSlotConstraint(model, lessonDict, constants, cursusWhitelist=None):
     morningOnlyFunction = cp.CpoStepFunction(steps=[(i,1 if i%4 < 2 else 0) for i in range(int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]))])
-    for AAdata in slots.values():
-        if allowed is not None and not any(cursus in AAdata["cursus"] for cursus in allowed):
+    for AA in lessonDict.values():
+        if cursusWhitelist is not None and not any(cursus in AA["cursus"] for cursus in cursusWhitelist):
             continue
-        for group in AAdata["divisions"]:
-            for interval in group:
-                model.add(cp.forbid_start(interval=interval,function=morningOnlyFunction))
+        for variablesOfDivision in AA["divisions"]:
+            for intervalVariable in variablesOfDivision:
+                model.add(cp.forbid_start(interval=intervalVariable,function=morningOnlyFunction))
 
-# toutes les séances d'un cursus/professeur/local sont disjointes
-def notOverlappingConstraint(model,slots):
-    for intervals in slots.values():
-        model.add(cp.no_overlap(intervals))
+def notOverlappingConstraint(model, entityIntervalVariables):
+    for intervalVariables in entityIntervalVariables.values():
+        model.add(cp.no_overlap(intervalVariables))
 
-def sameWeekDuplicatesConstraint(model, slots, constants):
-    for AA,AAdata in slots.items():
-        numberGroups = len(AAdata["divisions"])
-        numberLessons = len(AAdata["divisions"][0])
-        if numberGroups != 1:
-            for j in range(numberLessons):
-                duplicateSlots = [AAdata["divisions"][i][j] for i in range(numberGroups)]
-                for interval1,interval2 in itertools.combinations(duplicateSlots,2):
-                    model.add(cp.trunc(cp.start_of(interval1) / (constants["days"] * constants["slots"])) ==
-                              cp.trunc(cp.start_of(interval2) / (constants["days"] * constants["slots"])))
+def multipliedVariablesInSameSegmentConstraint(model, lessonDict, constants):
+    for AA in lessonDict.values():
+        numberOfDivisions = len(AA["divisions"])
+        numberOfLessons = len(AA["divisions"][0])
+        if numberOfDivisions != 1:
+            for j in range(numberOfLessons):
+                multipliedVariables = [AA["divisions"][i][j] for i in range(numberOfDivisions)]
+                for intervalVariable1,intervalVariable2 in itertools.combinations(multipliedVariables,2):
+                    model.add(cp.trunc(cp.start_of(intervalVariable1) / (constants["days"] * constants["slots"])) ==
+                              cp.trunc(cp.start_of(intervalVariable2) / (constants["days"] * constants["slots"])))
 
-def gapBetweenDuplicatesConstraint(model, slots, constants):
-    for AA,AAdata in slots.items():
-        numberGroups = len(AAdata["divisions"])
-        numberLessons = len(AAdata["divisions"][0])
-        if numberGroups != 1:
-            for j in range(numberLessons):
-                duplicateSlots = [AAdata["divisions"][i][j] for i in range(numberGroups)]
-                for interval1,interval2 in itertools.combinations(duplicateSlots,2):
-                    model.add(constants["gap"] >= cp.max(cp.start_of(interval1) - cp.end_of(interval2),
-                                                         cp.start_of(interval2) - cp.end_of(interval1)))
+def maxGapBetweenMultipliedVariables(model, lessonDict, constants):
+    for AA in lessonDict.values():
+        numberOfDivisions = len(AA["divisions"])
+        numberOfLessons = len(AA["divisions"][0])
+        if numberOfDivisions != 1:
+            for j in range(numberOfLessons):
+                multipliedVariables = [AA["divisions"][i][j] for i in range(numberOfDivisions)]
+                for intervalVariable1,intervalVariable2 in itertools.combinations(multipliedVariables,2):
+                    model.add(constants["gap"] >= cp.max(cp.start_of(intervalVariable1) - cp.end_of(intervalVariable2),
+                                                         cp.start_of(intervalVariable2) - cp.end_of(intervalVariable1)))
 
-def cursusUnavailabilityConstraint(model, cursusGroups, cursusSlots, constants):
-    data = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "Cursus")
+def cursusUnavailabilityConstraint(model, cursusGroups, groupsIntervalVariables, constants):
+    datasetCursusUnavailabilities = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "Cursus")
     unavailabilityFunctions = {}
 
-    for row in data.itertuples():
-        listCursus = cursusGroups.getGroups([row.cursus])
-        startValue = math.trunc((row.weekStart - 1) / constants["segmentSize"]) * 20 + (row.dayStart - 1) * constants[
-            "slots"] + (row.slotStart - 1)
-        endValue = math.trunc((row.weekEnd - 1) / constants["segmentSize"]) * 20 + (row.dayEnd - 1) * constants[
-            "slots"] + row.slotEnd
-        for c in listCursus:
-            if c not in unavailabilityFunctions:
-                unavailabilityFunctions[c] = cp.CpoStepFunction()
-                unavailabilityFunctions[c].set_value(0, int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]), 100)
-            unavailabilityFunctions[c].set_value(startValue,endValue,0)
+    for rowCursusUnavailabilities in datasetCursusUnavailabilities.itertuples():
+        listOfGroups = cursusGroups.getGroups([rowCursusUnavailabilities.cursus])
+        startValue = math.trunc((rowCursusUnavailabilities.weekStart - 1)
+                                / constants["segmentSize"]) * constants["days"] * constants["slots"] \
+                     + (rowCursusUnavailabilities.dayStart - 1) * constants["slots"] \
+                     + rowCursusUnavailabilities.slotStart - 1
+        endValue = math.trunc((rowCursusUnavailabilities.weekEnd - 1)
+                              / constants["segmentSize"]) * constants["days"] * constants["slots"] \
+                   + (rowCursusUnavailabilities.dayEnd - 1) * constants["slots"] \
+                   + rowCursusUnavailabilities.slotEnd
+        for group in listOfGroups:
+            if group not in unavailabilityFunctions:
+                unavailabilityFunctions[group] = cp.CpoStepFunction()
+                unavailabilityFunctions[group].set_value(0, int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]), 100)
+            unavailabilityFunctions[group].set_value(startValue,endValue,0)
 
-    for cursus,unavailabilityFunction in unavailabilityFunctions.items():
-        if any(cursus in c for c in cursusSlots.keys()):
-            for interval in cursusSlots[cursus]:
-                model.add(cp.forbid_extent(interval,unavailabilityFunction))
+    for group,unavailabilityFunction in unavailabilityFunctions.items():
+        if group in groupsIntervalVariables:
+            for intervalVariable in groupsIntervalVariables[group]:
+                model.add(cp.forbid_extent(intervalVariable,unavailabilityFunction))
 
-def teachersUnavailabilityConstraint(model, teacherSlots, constants):
-    data = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "Teachers")
+def teachersUnavailabilityConstraint(model, teachersIntervalVariables, constants):
+    datasetTeachersUnavailabilities = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "Teachers")
     unavailabilityFunctions = {}
 
-    for row in data.itertuples():
-        startValue = math.trunc((row.weekStart - 1) / constants["segmentSize"]) * 20 + (row.dayStart - 1) * constants[
-            "slots"] + (row.slotStart - 1)
-        endValue = math.trunc((row.weekEnd - 1) / constants["segmentSize"]) * 20 + (row.dayEnd - 1) * constants[
-            "slots"] + row.slotEnd
-        if row.teacher not in unavailabilityFunctions:
-            unavailabilityFunctions[row.teacher] = cp.CpoStepFunction()
-            unavailabilityFunctions[row.teacher].set_value(0, int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]), 100)
-        unavailabilityFunctions[row.teacher].set_value(startValue, endValue, 0)
+    for rowTeacherUnavailabilities in datasetTeachersUnavailabilities.itertuples():
+        startValue = math.trunc((rowTeacherUnavailabilities.weekStart - 1)
+                                / constants["segmentSize"]) * constants["days"] * constants["slots"] \
+                     + (rowTeacherUnavailabilities.dayStart - 1) * constants["slots"] \
+                     + rowTeacherUnavailabilities.slotStart - 1
+        endValue = math.trunc((rowTeacherUnavailabilities.weekEnd - 1)
+                              / constants["segmentSize"]) * constants["days"] * constants["slots"] \
+                   + (rowTeacherUnavailabilities.dayEnd - 1) * constants["slots"] \
+                   + rowTeacherUnavailabilities.slotEnd
+        if rowTeacherUnavailabilities.teacher not in unavailabilityFunctions:
+            unavailabilityFunctions[rowTeacherUnavailabilities.teacher] = cp.CpoStepFunction()
+            unavailabilityFunctions[rowTeacherUnavailabilities.teacher].set_value(0, int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]), 100)
+        unavailabilityFunctions[rowTeacherUnavailabilities.teacher].set_value(startValue, endValue, 0)
 
     for teacher, unavailabilityFunction in unavailabilityFunctions.items():
-        if teacher in teacherSlots:
-            for interval in teacherSlots[teacher]:
-                model.add(cp.forbid_extent(interval, unavailabilityFunction))
+        if teacher in teachersIntervalVariables:
+            for intervalVariable in teachersIntervalVariables[teacher]:
+                model.add(cp.forbid_extent(intervalVariable, unavailabilityFunction))
 
-def daysOffUnavailabilityConstraint(model, slots, constants):
-    data = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "Breaks")
+def daysOffUnavailabilityConstraint(model, lessonDict, constants):
+    datasetDaysOff = TFEdata.loadData(constants["fileDataset"],constants["quadri"], "Breaks")
     unavailabilityFunction = cp.CpoStepFunction()
     unavailabilityFunction.set_value(0, int(constants["weeks"] * constants["days"] * constants["slots"] / constants["segmentSize"]), 100)
 
-    for row in data.itertuples():
-        startValue = math.trunc((row.weekStart - 1) / constants["segmentSize"]) * 20 + (row.dayStart - 1) * constants[
-            "slots"] + (row.slotStart - 1)
-        endValue = math.trunc((row.weekEnd - 1) / constants["segmentSize"]) * 20 + (row.dayEnd - 1) * constants[
-            "slots"] + row.slotEnd
+    for rowDayOff in datasetDaysOff.itertuples():
+        startValue = math.trunc((rowDayOff.weekStart - 1) / constants["segmentSize"]) * constants["days"] * constants["slots"] \
+                     + (rowDayOff.dayStart - 1) * constants["slots"] \
+                     + rowDayOff.slotStart - 1
+        endValue = math.trunc((rowDayOff.weekEnd - 1) / constants["segmentSize"]) * constants["days"] * constants["slots"] \
+                   + (rowDayOff.dayEnd - 1) * constants["slots"] \
+                   + rowDayOff.slotEnd
         unavailabilityFunction.set_value(startValue, endValue, 0)
 
-    for AAdata in slots.values():
-        for group in AAdata["divisions"]:
-            for interval in group:
-                model.add(cp.forbid_extent(interval,unavailabilityFunction))
+    for AA in lessonDict.values():
+        for variablesOfDivision in AA["divisions"]:
+            for intervalVariable in variablesOfDivision:
+                model.add(cp.forbid_extent(intervalVariable,unavailabilityFunction))
 
-# chaque séance est numérotée et chronologique (briser la symétrie)
-def orderingSlotsConstraint(model,slots):
-    for AAdata in slots.values():
-        for group in AAdata["divisions"]:
-            for i in range(len(group)-1):
-                model.add(cp.end_before_start(group[i],group[i+1]))
+def orderingIntervalVariablesConstraint(model, lessonDict):
+    for AA in lessonDict.values():
+        for variablesOfDivision in AA["divisions"]:
+            for i in range(len(variablesOfDivision)-1):
+                model.add(cp.end_before_start(variablesOfDivision[i],variablesOfDivision[i+1]))
 
-def startAndEndConstraint(model, slots, constants):
-    for AAdata in slots.values():
-        for group in AAdata["divisions"]:
-            modelStartEnd = (math.floor((AAdata["weekBounds"][0]-1) / constants["segmentSize"]), math.ceil(AAdata["weekBounds"][1] / constants["segmentSize"]))
-            if modelStartEnd[0] != 0:
-                for interval in group:
-                    model.add(cp.start_of(interval) >= modelStartEnd[0] * 20)
-            if modelStartEnd[1] != constants["weeks"]/constants["segmentSize"]:
-                for interval in group:
-                    model.add(cp.end_of(interval) <= modelStartEnd[1] * 20)
+def segmentBoundsConstraint(model, lessonDict, constants):
+    for AA in lessonDict.values():
+        for variablesOfDivision in AA["divisions"]:
+            modelSegmentBounds = (math.floor((AA["weekBounds"][0]-1) / constants["segmentSize"]),
+                               math.ceil(AA["weekBounds"][1] / constants["segmentSize"]))
+            if modelSegmentBounds[0] != 0:
+                for intervalVariable in variablesOfDivision:
+                    model.add(cp.start_of(intervalVariable) >= modelSegmentBounds[0] * constants["days"] * constants["slots"])
+            if modelSegmentBounds[1] != constants["weeks"]/constants["segmentSize"]:
+                for intervalVariable in variablesOfDivision:
+                    model.add(cp.end_of(intervalVariable) <= modelSegmentBounds[1] * constants["days"] * constants["slots"])
 
 
-def spreadConstraint(model, slots, constants):
-    numberWeeksModel = int(constants["weeks"] / constants["segmentSize"])
-    for AAdata in slots.values():
-        for group in AAdata["divisions"]:
-            modelStartEnd = (math.floor((AAdata["weekBounds"][0] - 1) / constants["segmentSize"]), math.ceil(AAdata["weekBounds"][1] / constants["segmentSize"]))
-            spreadTime = modelStartEnd[1]-modelStartEnd[0]
-            numberFullBlocs = math.trunc(len(group)/spreadTime)
-            trailingBloc = int(len(group)%spreadTime)
-            for i in range(numberFullBlocs):
-                for j in range(spreadTime):
-                    model.add(cp.start_of(group[i * spreadTime + j]) >= (modelStartEnd[0] + j) * 20)
-                    model.add(cp.end_of(group[i * spreadTime + j]) <= (modelStartEnd[0] + j + 1) * 20)
-                    if i != numberFullBlocs - 1:
-                        model.add(cp.end_before_start(group[i * spreadTime + j], group[(i + 1) * spreadTime + j]))
-                # if trailingBloc != 0:
-                #     model.add(cp.end_before_start(group[len(group)-1],group[spreadTime-1]))
-                #     model.add(cp.end_before_start(group[(numberFullBlocs - 1) * spreadTime],group[numberFullBlocs * spreadTime]))
+def spreadIntervalVariablesOverSegments(model, lessonDict, constants):
+    totalNumberOfSegments = int(constants["weeks"] / constants["segmentSize"])
+    for AA in lessonDict.values():
+        for variablesOfDivision in AA["divisions"]:
+            modelSegmentBounds = (math.floor((AA["weekBounds"][0] - 1) / constants["segmentSize"]),
+                                  math.ceil(AA["weekBounds"][1] / constants["segmentSize"]))
+            sizeOfFullSequence = modelSegmentBounds[1]-modelSegmentBounds[0]
+            numberOfFullSequences = math.trunc(len(variablesOfDivision)/sizeOfFullSequence)
+            sizeOfFloatingSequence = int(len(variablesOfDivision)%sizeOfFullSequence)
+            for i in range(numberOfFullSequences):
+                for j in range(sizeOfFullSequence):
+                    model.add(cp.start_of(variablesOfDivision[i * sizeOfFullSequence + j])
+                              >= (modelSegmentBounds[0] + j) * constants["days"] * constants["slots"])
+                    model.add(cp.end_of(variablesOfDivision[i * sizeOfFullSequence + j])
+                              <= (modelSegmentBounds[0] + j + 1) * constants["days"] * constants["slots"])
+                    if i != numberOfFullSequences - 1:
+                        model.add(cp.end_before_start(variablesOfDivision[i * sizeOfFullSequence + j],
+                                                      variablesOfDivision[(i + 1) * sizeOfFullSequence + j]))
 
-            for i in range(trailingBloc):
-                if i != trailingBloc-1:
-                    model.add(cp.trunc(cp.start_of(group[numberFullBlocs*spreadTime+i]) / (constants["days"] * constants["slots"])) == cp.trunc(cp.start_of(group[numberFullBlocs * spreadTime + i + 1]) / (constants["days"] * constants["slots"])) - 1)
-                #     model.add(cp.end_before_start(group[numberFullBlocs * spreadTime + i], group[numberFullBlocs * spreadTime + i + 1]))
-                if modelStartEnd[0] != 0:
-                    model.add(cp.start_of(group[numberFullBlocs*spreadTime+i]) >= modelStartEnd[0] * 20)
-                if modelStartEnd[1] != numberWeeksModel:
-                    model.add(cp.end_of(group[numberFullBlocs*spreadTime+i]) <= modelStartEnd[1] * 20)
-            if trailingBloc != 0 and numberFullBlocs != 0:
-                trailingBlocPossibilities = spreadTime - trailingBloc + 1
-                logicalOrs = []
-                for i in range(trailingBlocPossibilities):
-                    logicalAnds = []
-                    for j in range(trailingBloc):
-                        logicalAnds.append((cp.end_of(group[(numberFullBlocs-1)*spreadTime+i+j]) <= cp.start_of(group[numberFullBlocs*spreadTime+j])))
-                        logicalAnds.append((cp.start_of(group[numberFullBlocs*spreadTime+j]) >= (modelStartEnd[0]+i+j) * constants["days"] * constants["slots"]))
-                        logicalAnds.append((cp.end_of(group[numberFullBlocs*spreadTime+j]) <= (modelStartEnd[0]+i+j+1) * constants["days"] * constants["slots"]))
-                    logicalOrs.append(cp.logical_and(logicalAnds))
-                model.add(cp.logical_or(logicalOrs))
+            for i in range(sizeOfFloatingSequence):
+                if i != sizeOfFloatingSequence-1:
+                    model.add(cp.trunc(cp.start_of(variablesOfDivision[numberOfFullSequences*sizeOfFullSequence+i])
+                                       / (constants["days"] * constants["slots"]))
+                              == cp.trunc(cp.start_of(variablesOfDivision[numberOfFullSequences * sizeOfFullSequence + i + 1])
+                                          / (constants["days"] * constants["slots"])) - 1)
+                if modelSegmentBounds[0] != 0:
+                    model.add(cp.start_of(variablesOfDivision[numberOfFullSequences*sizeOfFullSequence+i])
+                              >= modelSegmentBounds[0] * constants["days"] * constants["slots"])
+                if modelSegmentBounds[1] != totalNumberOfSegments:
+                    model.add(cp.end_of(variablesOfDivision[numberOfFullSequences*sizeOfFullSequence+i])
+                              <= modelSegmentBounds[1] * constants["days"] * constants["slots"])
+            if sizeOfFloatingSequence != 0 and numberOfFullSequences != 0:
+                numberOfScenarios = sizeOfFullSequence - sizeOfFloatingSequence + 1
+                scenarios = []
+                for i in range(numberOfScenarios):
+                    constraintsOfScenario = []
+                    for j in range(sizeOfFloatingSequence):
+                        constraintsOfScenario.append((cp.end_of(variablesOfDivision[(numberOfFullSequences-1)*sizeOfFullSequence+i+j])
+                                                      <= cp.start_of(variablesOfDivision[numberOfFullSequences*sizeOfFullSequence+j])))
+                        constraintsOfScenario.append((cp.start_of(variablesOfDivision[numberOfFullSequences*sizeOfFullSequence+j])
+                                                      >= (modelSegmentBounds[0]+i+j) * constants["days"] * constants["slots"]))
+                        constraintsOfScenario.append((cp.end_of(variablesOfDivision[numberOfFullSequences*sizeOfFullSequence+j])
+                                                      <= (modelSegmentBounds[0]+i+j+1) * constants["days"] * constants["slots"]))
+                    scenarios.append(cp.logical_and(constraintsOfScenario))
+                model.add(cp.logical_or(scenarios))
 
-def regularityConstraint(model, slots, constants):
-    for AAdata in slots.values():
-        for group in AAdata["divisions"]:
-            spreads = TFEvariables.splitVariablesInBlocs(group, constants["regularitySize"])
-            for spread in spreads:
-                for i in range(len(spread)-1):
-                    model.add(cp.start_at_start(spread[i], spread[i + 1], delay=20))
+def strictRegularityConstraint(model, lessonDict, constants):
+    for AA in lessonDict.values():
+        for variablesOfDivision in AA["divisions"]:
+            sequences = TFEvariables.splitVariablesInSequences(variablesOfDivision, constants["fullSequenceSize"])
+            for variablesOfSequence in sequences:
+                for i in range(len(variablesOfSequence)-1):
+                    model.add(cp.start_at_start(variablesOfSequence[i], variablesOfSequence[i + 1], delay=20))
 
-def breakSymmetryBetweenSpreads(model, slots, constants):
-    for AAdata in slots.values():
-        for group in AAdata["divisions"]:
-            spreads = TFEvariables.splitVariablesInBlocs(group, constants["regularitySize"])
-            fullSpreads = [spread for spread in spreads if len(spread) == constants["regularitySize"]]
-            for i in range(len(fullSpreads)-1):
-                for j in range(len(fullSpreads[0])):
-                    model.add(cp.end_before_start(fullSpreads[i][j],fullSpreads[i+1][j]))
+def breakSymmetryBetweenFullSequences(model, lessonDict, constants):
+    for AA in lessonDict.values():
+        for variablesOfDivision in AA["divisions"]:
+            sequences = TFEvariables.splitVariablesInSequences(variablesOfDivision, constants["fullSequenceSize"])
+            fullSequences = [spread for spread in sequences if len(spread) == constants["fullSequenceSize"]]
+            for i in range(len(fullSequences)-1):
+                for j in range(len(fullSequences[0])):
+                    model.add(cp.end_before_start(fullSequences[i][j],fullSequences[i+1][j]))
 
-def lecturesBeforeConstraint(model, lectureSlots, afterSlots, AAset, constants):
-    for AA in AAset:
-        if AA in lectureSlots:
-            modelStartEndLecture = (
-                math.floor((lectureSlots[AA]["weekBounds"][0] - 1) / constants["segmentSize"]),
-                math.ceil(lectureSlots[AA]["weekBounds"][1] / constants["segmentSize"])
-            )
-            spreadTimeLecture = modelStartEndLecture[1] - modelStartEndLecture[0]
-            for groupLecture in lectureSlots[AA]["divisions"]:
-                numberFullBlocsLecture = math.trunc(len(groupLecture) / spreadTimeLecture)
-                trailingBlocLecture = int(len(groupLecture) % spreadTimeLecture)
-                for slots in afterSlots:
-                    if AA in slots:
-                        modelStartEndSlots = (
-                            math.floor((slots[AA]["weekBounds"][0] - 1) / constants["segmentSize"]),
-                            math.ceil(slots[AA]["weekBounds"][1] / constants["segmentSize"])
-                        )
-                        spreadTimeSlots = modelStartEndSlots[1] - modelStartEndSlots[0]
-                        if (modelStartEndLecture[0] >= modelStartEndSlots[1] or modelStartEndSlots[0] >= modelStartEndLecture[1]):
+def lecturesBeforeConstraint(model, lecturesDict, listOfAfterLessonsDict, AAset, constants):
+    for idAA in AAset:
+        if idAA in lecturesDict:
+            modelWeekBoundsLecture = (math.floor((lecturesDict[idAA]["weekBounds"][0] - 1) / constants["segmentSize"]),
+                                      math.ceil(lecturesDict[idAA]["weekBounds"][1] / constants["segmentSize"]))
+            sizeOfFullSequenceLecture = modelWeekBoundsLecture[1] - modelWeekBoundsLecture[0]
+            for variablesOfDivisionLecture in lecturesDict[idAA]["divisions"]:
+                numberOfFullSequencesLecture = math.trunc(len(variablesOfDivisionLecture) / sizeOfFullSequenceLecture)
+                sizeOfFloatingSequenceLecture = int(len(variablesOfDivisionLecture) % sizeOfFullSequenceLecture)
+                for afterLessonDict in listOfAfterLessonsDict:
+                    if idAA in afterLessonDict:
+                        modelWeekBoundsAfterLesson = (math.floor((afterLessonDict[idAA]["weekBounds"][0] - 1) / constants["segmentSize"]),
+                                                      math.ceil(afterLessonDict[idAA]["weekBounds"][1] / constants["segmentSize"]))
+                        sizeOfFullSequenceAfterLesson = modelWeekBoundsAfterLesson[1] - modelWeekBoundsAfterLesson[0]
+                        if (modelWeekBoundsLecture[0] >= modelWeekBoundsAfterLesson[1]
+                                or modelWeekBoundsAfterLesson[0] >= modelWeekBoundsLecture[1]):
                             continue
                         else:
-                            intersectionTime = (
-                                max(modelStartEndLecture[0],modelStartEndSlots[0]),
-                                min(modelStartEndLecture[1],modelStartEndSlots[1])
-                            )
-                            for groupSlots in slots[AA]["divisions"]:
-                                numberFullBlocsSlots = math.trunc(len(groupSlots) / spreadTimeSlots)
-                                trailingBlocSlots = int(len(groupSlots) % spreadTimeSlots)
+                            segmentsIntersection = (max(modelWeekBoundsLecture[0],modelWeekBoundsAfterLesson[0]),
+                                                    min(modelWeekBoundsLecture[1],modelWeekBoundsAfterLesson[1]))
+                            for variablesOfDivisionAfterLesson in afterLessonDict[idAA]["divisions"]:
+                                numberOfFullSequencesAfterLesson = math.trunc(len(variablesOfDivisionAfterLesson) / sizeOfFullSequenceAfterLesson)
+                                sizeOfFloatingSequenceAfterLesson = int(len(variablesOfDivisionAfterLesson) % sizeOfFullSequenceAfterLesson)
 
-                                if trailingBlocLecture == 0:
-                                    if trailingBlocSlots == 0 or numberFullBlocsSlots != 0:
-                                        for i in range(intersectionTime[0],intersectionTime[1]):
-                                            model.add(cp.end_before_start(
-                                                groupLecture[(numberFullBlocsLecture-1)*spreadTimeLecture+i-modelStartEndLecture[0]],
-                                                groupSlots[i-modelStartEndSlots[0]]
-                                            ))
+                                if sizeOfFloatingSequenceLecture == 0:
+                                    if sizeOfFloatingSequenceAfterLesson == 0 or numberOfFullSequencesAfterLesson != 0:
+                                        for i in range(segmentsIntersection[0],segmentsIntersection[1]):
+                                            model.add(cp.end_before_start(variablesOfDivisionLecture[(numberOfFullSequencesLecture-1)*sizeOfFullSequenceLecture+i-modelWeekBoundsLecture[0]],
+                                                                          variablesOfDivisionAfterLesson[i-modelWeekBoundsAfterLesson[0]]))
                                     else:
-                                        trailingBlocPossibilities = spreadTimeSlots - trailingBlocSlots + 1
+                                        numberOfScenariosAfterLesson = sizeOfFullSequenceAfterLesson - sizeOfFloatingSequenceAfterLesson + 1
                                         overlapPossibilities = []
-                                        for i in range(trailingBlocPossibilities):
-                                            overlapPossibilities.append([(l,s) for l in range(spreadTimeLecture) for s in range(trailingBlocSlots) if l + modelStartEndLecture[0] == s + modelStartEndSlots[0] + i])
-                                        logicalOrs = []
+                                        for i in range(numberOfScenariosAfterLesson):
+                                            overlapPossibilities.append([(lectureIndex,afterLessonIndex) for lectureIndex in range(sizeOfFullSequenceLecture) for afterLessonIndex in range(sizeOfFloatingSequenceAfterLesson)
+                                                                         if lectureIndex + modelWeekBoundsLecture[0] == afterLessonIndex + modelWeekBoundsAfterLesson[0] + i])
+                                        scenarios = []
                                         for overlap in overlapPossibilities:
-                                            logicalAnds = []
+                                            constraintsOfScenario = []
                                             if len(overlap) != 0:
-                                                for l,s in overlap:
-                                                    logicalAnds.append((cp.end_of(groupLecture[(numberFullBlocsLecture-1)*spreadTimeLecture+l]) <= cp.start_of(groupSlots[s])))
-                                                    logicalAnds.append((cp.end_of(groupSlots[s]) <= (l + 1 + modelStartEndLecture[0]) * constants["days"] * constants["slots"]))
-                                                    logicalAnds.append((cp.start_of(groupSlots[s]) >= (l + modelStartEndLecture[0]) * constants["days"] * constants["slots"]))
-                                                logicalOrs.append(cp.logical_and(logicalAnds))
-                                        model.add(cp.logical_or(logicalOrs))
+                                                for lectureIndex,afterLessonIndex in overlap:
+                                                    constraintsOfScenario.append((cp.end_of(variablesOfDivisionLecture[(numberOfFullSequencesLecture-1)*sizeOfFullSequenceLecture+lectureIndex])
+                                                                                  <= cp.start_of(variablesOfDivisionAfterLesson[afterLessonIndex])))
+                                                    constraintsOfScenario.append((cp.end_of(variablesOfDivisionAfterLesson[afterLessonIndex])
+                                                                                  <= (lectureIndex + 1 + modelWeekBoundsLecture[0]) * constants["days"] * constants["slots"]))
+                                                    constraintsOfScenario.append((cp.start_of(variablesOfDivisionAfterLesson[afterLessonIndex])
+                                                                                  >= (lectureIndex + modelWeekBoundsLecture[0]) * constants["days"] * constants["slots"]))
+                                                scenarios.append(cp.logical_and(constraintsOfScenario))
+                                        model.add(cp.logical_or(scenarios))
 
                                 else:
-                                    if trailingBlocSlots == 0 or numberFullBlocsSlots != 0:
-                                        trailingBlocPossibilities = spreadTimeLecture - trailingBlocLecture + 1
+                                    if sizeOfFloatingSequenceAfterLesson == 0 or numberOfFullSequencesAfterLesson != 0:
+                                        numberOfScenariosLecture = sizeOfFullSequenceLecture - sizeOfFloatingSequenceLecture + 1
                                         overlapPossibilities = []
-                                        for i in range(trailingBlocPossibilities):
-                                            overlapPossibilities.append(
-                                                [(l, s) for l in range(trailingBlocLecture) for s in
-                                                 range(spreadTimeSlots) if
-                                                 l + modelStartEndLecture[0] + i == s + modelStartEndSlots[0]])
-                                        logicalOrs = []
+                                        for i in range(numberOfScenariosLecture):
+                                            overlapPossibilities.append([(lectureIndex, afterLessonIndex) for lectureIndex in range(sizeOfFloatingSequenceLecture) for afterLessonIndex in range(sizeOfFullSequenceAfterLesson)
+                                                                         if lectureIndex + modelWeekBoundsLecture[0] + i == afterLessonIndex + modelWeekBoundsAfterLesson[0]])
+                                        scenarios = []
                                         for overlap in overlapPossibilities:
-                                            logicalAnds = []
+                                            constraintsOfScenario = []
                                             if len(overlap) != 0:
-                                                for l, s in overlap:
-                                                    logicalAnds.append((cp.end_of(groupLecture[numberFullBlocsLecture * spreadTimeLecture + l]) <= cp.start_of(groupSlots[s])))
-                                                    logicalAnds.append((cp.end_of(groupLecture[numberFullBlocsLecture * spreadTimeLecture + l]) <= (s+1+modelStartEndSlots[0]) * constants["days"] * constants["slots"]))
-                                                    logicalAnds.append((cp.start_of(groupLecture[numberFullBlocsLecture * spreadTimeLecture + l]) >= (s+modelStartEndSlots[0]) * constants["days"] * constants["slots"]))
-                                                logicalOrs.append(cp.logical_and(logicalAnds))
-                                        model.add(cp.logical_or(logicalOrs))
-                                        if numberFullBlocsLecture != 0:
-                                            for i in range(intersectionTime[0], intersectionTime[1]):
-                                                model.add(cp.end_before_start(
-                                                    groupLecture[(numberFullBlocsLecture - 1) * spreadTimeLecture + i - modelStartEndLecture[0]],
-                                                    groupSlots[i - modelStartEndSlots[0]]
-                                                ))
+                                                for lectureIndex, afterLessonIndex in overlap:
+                                                    constraintsOfScenario.append((cp.end_of(variablesOfDivisionLecture[numberOfFullSequencesLecture * sizeOfFullSequenceLecture + lectureIndex])
+                                                                                  <= cp.start_of(variablesOfDivisionAfterLesson[afterLessonIndex])))
+                                                    constraintsOfScenario.append((cp.end_of(variablesOfDivisionLecture[numberOfFullSequencesLecture * sizeOfFullSequenceLecture + lectureIndex])
+                                                                                  <= (afterLessonIndex+1+modelWeekBoundsAfterLesson[0]) * constants["days"] * constants["slots"]))
+                                                    constraintsOfScenario.append((cp.start_of(variablesOfDivisionLecture[numberOfFullSequencesLecture * sizeOfFullSequenceLecture + lectureIndex])
+                                                                                  >= (afterLessonIndex+modelWeekBoundsAfterLesson[0]) * constants["days"] * constants["slots"]))
+                                                scenarios.append(cp.logical_and(constraintsOfScenario))
+                                        model.add(cp.logical_or(scenarios))
+                                        if numberOfFullSequencesLecture != 0:
+                                            for i in range(segmentsIntersection[0], segmentsIntersection[1]):
+                                                model.add(cp.end_before_start(variablesOfDivisionLecture[(numberOfFullSequencesLecture - 1) * sizeOfFullSequenceLecture + i - modelWeekBoundsLecture[0]],
+                                                                              variablesOfDivisionAfterLesson[i - modelWeekBoundsAfterLesson[0]]))
                                     else:
-                                        trailingBlocPossibilitiesLectures = spreadTimeLecture - trailingBlocLecture + 1
-                                        trailingBlocPossibilitiesSlots = spreadTimeSlots - trailingBlocSlots + 1
+                                        numberOfScenariosLecture = sizeOfFullSequenceLecture - sizeOfFloatingSequenceLecture + 1
+                                        numberOfScenariosAfterLesson = sizeOfFullSequenceAfterLesson - sizeOfFloatingSequenceAfterLesson + 1
                                         overlapPossibilities = {}
-                                        for i in range(trailingBlocPossibilitiesLectures):
-                                            for j in range(trailingBlocPossibilitiesSlots):
-                                                possibilities = [(l,s) for l in range(trailingBlocLecture) for s in
-                                                     range(trailingBlocSlots) if
-                                                     l + modelStartEndLecture[0] + i == s + modelStartEndSlots[0] + j]
-                                                overlapPossibilities[(i+modelStartEndLecture[0],j+modelStartEndSlots[0])] = possibilities
-                                        logicalOrs = []
-                                        for weekKeys,overlap in overlapPossibilities.items():
-                                            logicalAnds = []
-                                            for l,s in overlap:
-                                                logicalAnds.append((cp.end_of(groupLecture[numberFullBlocsLecture * spreadTimeLecture + l]) <= cp.start_of(groupSlots[s])))
-                                            for i in range(trailingBlocLecture):
-                                                logicalAnds.append((cp.end_of(groupLecture[numberFullBlocsLecture * spreadTimeLecture + i]) <= (weekKeys[0] + i + 1) * constants["days"] * constants["slots"]))
-                                                logicalAnds.append((cp.start_of(groupLecture[numberFullBlocsLecture * spreadTimeLecture + i]) >= (weekKeys[0] + i) * constants["days"] * constants["slots"]))
-                                            for i in range(trailingBlocSlots):
-                                                logicalAnds.append((cp.end_of(groupSlots[i]) <= (weekKeys[1] + i + 1) * constants["days"] * constants["slots"]))
-                                                logicalAnds.append((cp.start_of(groupSlots[i]) >= (weekKeys[1] + i) * constants["days"] * constants["slots"]))
-                                                if numberFullBlocsLecture != 0 and i + weekKeys[1] in range(intersectionTime[0],intersectionTime[1]):
-                                                    logicalAnds.append((cp.end_of(groupLecture[(numberFullBlocsLecture - 1) * spreadTimeLecture + i + weekKeys[1] - modelStartEndLecture[0]]) <= cp.start_of(groupSlots[i])))
-                                            logicalOrs.append(cp.logical_and(logicalAnds))
-                                        model.add(cp.logical_or(logicalOrs))
-
+                                        for i in range(numberOfScenariosLecture):
+                                            for j in range(numberOfScenariosAfterLesson):
+                                                possibilities = [(lectureIndex,afterLessonIndex) for lectureIndex in range(sizeOfFloatingSequenceLecture) for afterLessonIndex in range(sizeOfFloatingSequenceAfterLesson)
+                                                                 if lectureIndex + modelWeekBoundsLecture[0] + i == afterLessonIndex + modelWeekBoundsAfterLesson[0] + j]
+                                                overlapPossibilities[(i+modelWeekBoundsLecture[0],j+modelWeekBoundsAfterLesson[0])] = possibilities
+                                        scenarios = []
+                                        for segmentsKey,overlap in overlapPossibilities.items():
+                                            constraintsOfScenario = []
+                                            for lectureIndex,afterLessonIndex in overlap:
+                                                constraintsOfScenario.append((cp.end_of(variablesOfDivisionLecture[numberOfFullSequencesLecture * sizeOfFullSequenceLecture + lectureIndex])
+                                                                              <= cp.start_of(variablesOfDivisionAfterLesson[afterLessonIndex])))
+                                            for i in range(sizeOfFloatingSequenceLecture):
+                                                constraintsOfScenario.append((cp.end_of(variablesOfDivisionLecture[numberOfFullSequencesLecture * sizeOfFullSequenceLecture + i])
+                                                                              <= (segmentsKey[0] + i + 1) * constants["days"] * constants["slots"]))
+                                                constraintsOfScenario.append((cp.start_of(variablesOfDivisionLecture[numberOfFullSequencesLecture * sizeOfFullSequenceLecture + i])
+                                                                              >= (segmentsKey[0] + i) * constants["days"] * constants["slots"]))
+                                            for i in range(sizeOfFloatingSequenceAfterLesson):
+                                                constraintsOfScenario.append((cp.end_of(variablesOfDivisionAfterLesson[i])
+                                                                              <= (segmentsKey[1] + i + 1) * constants["days"] * constants["slots"]))
+                                                constraintsOfScenario.append((cp.start_of(variablesOfDivisionAfterLesson[i])
+                                                                              >= (segmentsKey[1] + i) * constants["days"] * constants["slots"]))
+                                                if numberOfFullSequencesLecture != 0 and i + segmentsKey[1] in range(segmentsIntersection[0],segmentsIntersection[1]):
+                                                    constraintsOfScenario.append((cp.end_of(variablesOfDivisionLecture[(numberOfFullSequencesLecture - 1) * sizeOfFullSequenceLecture + i + segmentsKey[1] - modelWeekBoundsLecture[0]])
+                                                                                  <= cp.start_of(variablesOfDivisionAfterLesson[i])))
+                                            scenarios.append(cp.logical_and(constraintsOfScenario))
+                                        model.add(cp.logical_or(scenarios))

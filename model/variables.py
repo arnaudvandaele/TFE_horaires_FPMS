@@ -12,7 +12,7 @@ def generateIntervalVariables(constants):
     tpsDict = {}
     projectsDict = {}
 
-    cursusIntervalVariables = defaultdict(list)
+    groupsIntervalVariables = defaultdict(list)
     teachersIntervalVariables = defaultdict(list)
     roomsIntervalVariables = defaultdict(list)
 
@@ -60,7 +60,7 @@ def generateIntervalVariables(constants):
             lecturesDict[rowAA.id]["divisions"][0].extend(lectureIntervalVariables)
 
             for group in listOfGroups:
-                cursusIntervalVariables[group].extend(lectureIntervalVariables)
+                groupsIntervalVariables[group].extend(lectureIntervalVariables)
             for teacher in rowAA.lectureTeachers.split(","):
                 teachersIntervalVariables[teacher].extend(lectureIntervalVariables)
             for room in rowAA.lectureRooms.split(","):
@@ -97,7 +97,7 @@ def generateIntervalVariables(constants):
 
                     for group,divisionIndex in listOfDivisions.items():
                         if divisionIndex == currentDivisionIndex:
-                            cursusIntervalVariables[group].append(exerciseIntervalVariable)
+                            groupsIntervalVariables[group].append(exerciseIntervalVariable)
                     if rowAA.exerciseSplit != 0:
                         numberCycles = math.ceil(len(listOfTeachers) / rowAA.exerciseSplit)
                         sizeLastCycle = len(listOfTeachers) % rowAA.exerciseSplit if rowAA.exerciseSplit != 1 else 1
@@ -149,7 +149,7 @@ def generateIntervalVariables(constants):
 
                     for group, divisionIndex in listOfDivisions.items():
                         if divisionIndex == currentDivisionIndex:
-                            cursusIntervalVariables[group].append(tpIntervalVariable)
+                            groupsIntervalVariables[group].append(tpIntervalVariable)
                     for teacher in rowAA.tpTeachers.split(","):
                         teachersIntervalVariables[teacher].append(tpIntervalVariable)
                     for room in rowAA.tpRooms.split(","):
@@ -182,13 +182,13 @@ def generateIntervalVariables(constants):
             projectsDict[rowAA.id]["divisions"][0].extend(projectIntervalVariables)
 
             for group in listOfGroups:
-                cursusIntervalVariables[group].extend(projectIntervalVariables)
+                groupsIntervalVariables[group].extend(projectIntervalVariables)
             for teacher in rowAA.projectTeachers.split(","):
                 teachersIntervalVariables[teacher].extend(projectIntervalVariables)
 
     print("delta", delta)
     return lecturesDict,exercisesDict,tpsDict,projectsDict,\
-           cursusIntervalVariables,teachersIntervalVariables,roomsIntervalVariables,\
+           groupsIntervalVariables,teachersIntervalVariables,roomsIntervalVariables,\
            cursusGroups,AAset
 
 def generateCharleroiIntervalVariables(model, teachersIntervalVariables, roomsIntervalVariables, constants):
@@ -254,9 +254,9 @@ def generateCharleroiFixedIntervalVariables(model, teachersIntervalVariables, ro
     for rowTeacher in datasetCharleroiTeachers.itertuples():
         variableName = rowTeacher.AA
         realWeekBounds = (rowTeacher.weekStart,rowTeacher.weekEnd)
-        modelWeekBounds = (math.floor((realWeekBounds[0] - 1) / constants["segmentSize"]), math.ceil(realWeekBounds[1] / constants["segmentSize"]))
+        modelSegmentBounds = (math.floor((realWeekBounds[0] - 1) / constants["segmentSize"]), math.ceil(realWeekBounds[1] / constants["segmentSize"]))
 
-        for w in range(modelWeekBounds[0],modelWeekBounds[1]):
+        for w in range(modelSegmentBounds[0],modelSegmentBounds[1]):
             charleroiIntervalVariable = cp.interval_var(start=(0,totalSlots-2),
                                                 end=(2,totalSlots),
                                                 size=2,
@@ -268,9 +268,9 @@ def generateCharleroiFixedIntervalVariables(model, teachersIntervalVariables, ro
 
             model.add(cp.start_of(charleroiIntervalVariable) == w * constants["days"] * constants["slots"] + constants["slots"] * (rowTeacher.day - 1) + rowTeacher.slot - 1)
 
-def splitVariablesInBlocs(intervalVariables, blocSize):
-    numberOfBlocs = math.ceil(len(intervalVariables) / blocSize)
-    blocs = [[] for b in range(numberOfBlocs)]
+def splitVariablesInSequences(intervalVariables, fullSequenceSize):
+    numberOfSequences = math.ceil(len(intervalVariables) / fullSequenceSize)
+    sequences = [[] for s in range(numberOfSequences)]
     for v in range(len(intervalVariables)):
-        blocs[math.trunc(v/blocSize)].append(intervalVariables[v])
-    return blocs
+        sequences[math.trunc(v / fullSequenceSize)].append(intervalVariables[v])
+    return sequences

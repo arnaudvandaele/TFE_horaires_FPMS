@@ -36,24 +36,24 @@ constants = {
 }
 
 lecturesDict, exercisesDict, tpsDict, projectsDict, \
-cursusIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, \
+groupsIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, \
 cursusGroups, AAset = TFEvariables.generateIntervalVariables(constants)
 
-TFEconstraints.cursusUnavailabilityConstraint(model, cursusGroups, cursusIntervalVariables, constants)
+TFEconstraints.cursusUnavailabilityConstraint(model, cursusGroups, groupsIntervalVariables, constants)
 TFEconstraints.teachersUnavailabilityConstraint(model, teachersIntervalVariables, constants)
 
-TFEconstraints.firstOrThirdSlotConstraint(model, tpsDict, constants)
-TFEconstraints.firstOrThirdSlotConstraint(model, projectsDict, constants)
-TFEconstraints.notOverlappingConstraint(model, cursusIntervalVariables)
+TFEconstraints.longIntervalVariablesIntegrity(model, tpsDict, constants)
+TFEconstraints.longIntervalVariablesIntegrity(model, projectsDict, constants)
+TFEconstraints.notOverlappingConstraint(model, groupsIntervalVariables)
 TFEconstraints.notOverlappingConstraint(model, teachersIntervalVariables)
 TFEconstraints.notOverlappingConstraint(model, roomsIntervalVariables)
-TFEconstraints.sameWeekDuplicatesConstraint(model, exercisesDict, constants)
-TFEconstraints.sameWeekDuplicatesConstraint(model, tpsDict, constants)
+TFEconstraints.multipliedVariablesInSameSegmentConstraint(model, exercisesDict, constants)
+TFEconstraints.multipliedVariablesInSameSegmentConstraint(model, tpsDict, constants)
 
-TFEconstraints.spreadConstraint(model, lecturesDict, constants)
-TFEconstraints.spreadConstraint(model, exercisesDict, constants)
-TFEconstraints.spreadConstraint(model, tpsDict, constants)
-TFEconstraints.spreadConstraint(model, projectsDict, constants)
+TFEconstraints.spreadIntervalVariablesOverSegments(model, lecturesDict, constants)
+TFEconstraints.spreadIntervalVariablesOverSegments(model, exercisesDict, constants)
+TFEconstraints.spreadIntervalVariablesOverSegments(model, tpsDict, constants)
+TFEconstraints.spreadIntervalVariablesOverSegments(model, projectsDict, constants)
 
 model.add_solver_callback(TFEcallbacks.PersonalCallback())
 
@@ -68,13 +68,13 @@ if solution:
 
     # solution.write()
     pass
-    # TFEtimetable.generateAndSaveTimetables(solution, cursusIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, constants, colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution, teachersIntervalVariables, cursusIntervalVariables, roomsIntervalVariables, constants, colors.COLORS)
-    # TFEtimetable.generateAndSaveTimetables(solution, roomsIntervalVariables, teachersIntervalVariables, cursusIntervalVariables, constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, "BA1_A", constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, cursusIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, "BA1_B", constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, roomsIntervalVariables, teachersIntervalVariables, cursusIntervalVariables, "Ho.12", constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, teachersIntervalVariables, cursusIntervalVariables, roomsIntervalVariables, "Vandaele A", constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, groupsIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, teachersIntervalVariables, groupsIntervalVariables, roomsIntervalVariables, constants, colors.COLORS)
+    # TFEtimetable.generateAndSaveTimetables(solution, roomsIntervalVariables, teachersIntervalVariables, groupsIntervalVariables, constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, groupsIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, "BA1_A", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, groupsIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, "BA1_B", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, roomsIntervalVariables, teachersIntervalVariables, groupsIntervalVariables, "Ho.12", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, teachersIntervalVariables, groupsIntervalVariables, roomsIntervalVariables, "Vandaele A", constants, colors.COLORS)
 
     print(time.time() - begin)
 else:
