@@ -32,9 +32,9 @@ def loadCursusData(fileDataset):
 
     :param fileDataset: (string) file name of the .xlsx file to load. The file must be placed in the /data folder and have a "Groups" sheet with caracteristics cited above
     :return cursusData: (dict) dictionary where :
-        - key = name of the cursus
+        - key = name of the cursus (i.e. BA1, BA2, ...)
         - value = dictionary where :
-            - key = name of the group
+            - key = name of the group (i.e. BA1_A, BA1_B, ...)
             - value = number of students in this group
     """
 
@@ -54,6 +54,8 @@ def loadCursusData(fileDataset):
                 cursusData[rowCursus.cursus][rowCursus.cursus+"_"+chr(i+65)] = baseNumberOfStudents + (1 if i < restNumberOfStudents else 0)
 
         # the cursus has only one group
+        # in this case, cursusData[key] is a dict with one key-value entry where the group's name is the same as the cursus' name
+        # i.e. the BA3_IG cursus with x students will result in : cursusData["BA3_IG"] = {"BA3_IG": x}
         else:
             cursusData[rowCursus.cursus][rowCursus.cursus] = baseNumberOfStudents
 

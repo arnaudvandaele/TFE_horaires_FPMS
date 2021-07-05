@@ -46,11 +46,11 @@ constants = {
     "cursus": {
         "BA1": False,
         "BA2": True,
-        "BA3_CHIM": True,
-        "BA3_ELEC": True,
-        "BA3_IG": True,
-        "BA3_MECA": True,
-        "BA3_MIN": True
+        "BA3_CHIM": False,
+        "BA3_ELEC": False,
+        "BA3_IG": False,
+        "BA3_MECA": False,
+        "BA3_MIN": False
     },
     "quadri": "Q1",
     "fileDataset": "datasetBase.xlsx",
@@ -128,7 +128,7 @@ if solution:
     # TFEtimetable.generateAndSaveTimetables(solution, groupsIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, constants, colors.COLORS)
     # TFEtimetable.generateAndSaveTimetables(solution, teachersIntervalVariables, groupsIntervalVariables, roomsIntervalVariables, constants, colors.COLORS)
     # TFEtimetable.generateAndSaveTimetables(solution, roomsIntervalVariables, teachersIntervalVariables, groupsIntervalVariables, constants, colors.COLORS)
-    # TFEtimetable.generateAndDisplayTimetable(solution, groupsIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, "BA1_A", constants, colors.COLORS)
+    # TFEtimetable.generateAndDisplayTimetable(solution, groupsIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, "BA2_A", constants, colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, groupsIntervalVariables, teachersIntervalVariables, roomsIntervalVariables, "BA1_B", constants, colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, roomsIntervalVariables, teachersIntervalVariables, groupsIntervalVariables, "Ho.12", constants, colors.COLORS)
     # TFEtimetable.generateAndDisplayTimetable(solution, teachersIntervalVariables, groupsIntervalVariables, roomsIntervalVariables, "Vandaele A", constants, colors.COLORS)
