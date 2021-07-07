@@ -13,12 +13,12 @@ def generateIntervalVariables(constants):
     CP Optimizer supports interesting scheduling constraints with this type of variable
     (more information : https://fr.slideshare.net/PhilippeLaborie/introduction-to-cp-optimizer-for-scheduling)
 
-    Lecture and exercise lessons are short (2h) and thus will have a length of 1 (1 unit of time = 2 hours)
-    TP and projects lessons are long (4h) and this will have a length of 2
+    Lecture and exercise lessons are short (2h) and thus have a length of 1 (1 unit of time = 2 hours)
+    TP and projects lessons are long (4h) and thus have a length of 2
 
     lecturesDict, exercisesDict, tpsDict and projectsDict (all called "lessonDict" below) contain interval variables and information about the AA :
-    A lessonDict is a dictionary which has :
-        - key = code of AA (i.e. "I-MARO-020")
+    A lessonDict is a dictionary with :
+        - key = (string) AA code (i.e. "I-MARO-020")
         - value = a dictionary with 3 key-values:
             - 1 = "weekBounds" : (tuple) (weekStart,weekEnd) week number of start and end of the AA (from 1 to constants["weeks"])
             - 2 = "divisions" : (list) list of interval variables per division
@@ -26,7 +26,7 @@ def generateIntervalVariables(constants):
 
     groupsIntervalVariables, teachersIntervalVariables and roomsIntervalVariables are defaultdict(list)
     The structure is :
-        - key = name of the resource
+        - key = resource name
         - value = all interval variables where the resource is needed
     A defaultdict(list) means that a new entry will be initialised with a list
 

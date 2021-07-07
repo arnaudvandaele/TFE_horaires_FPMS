@@ -1,11 +1,11 @@
 """
 COLORS is a dictionary with :
-    - key = code of AA
-    - value = tuple (r,g,b,a), all values in [0,1]
+    - key = (string) code of AA
+    - value = (tuple) (r,g,b,a), all values in [0,1]
 
-This dict is used to select the same color each run when displaying and or saving timetables.
+This dict is used to select the same color in each run when displaying and/or saving timetables.
 If an AA is absent, a random tuple different from existing ones will be generated (see /model/timetable.py).
-Feel free to change a color or to register a new AA with its color.
+Feel free to change a color and/or to register a new AA with its corresponding tuple.
 """
 COLORS = {
     "I-GMEC-021": (0.6862745098039216, 0.7058823529411765, 0.06666666666666667, 1),
